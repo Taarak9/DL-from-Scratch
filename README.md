@@ -3,8 +3,8 @@
 **Logistic Regression**
 
 Aeroplane Classification using Logistic Regression with two modes of learning
--     Perceptron learning rule
--     Gradient descent learning rule
+* Perceptron learning rule
+* Gradient descent learning rule
 
 **Hopfield network**
 
