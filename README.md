@@ -1,6 +1,8 @@
-# Neural-Networks-Library
+# Neural-Networks
 
 **Feedforward Neural Network**   
+* Backpropagation Learning | Stochastic Gradient Descent  
+
 **Logistic Regression**
 
 Aeroplane Classification using Logistic Regression with two modes
