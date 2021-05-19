@@ -3,11 +3,11 @@
 **Feedforward Neural Network**   
 * Backpropagation Learning | Stochastic Gradient Descent  
 
-**Logistic Regression**
+**Linear Classifier**
 
-Aeroplane Classification using Logistic Regression with two modes
+Aeroplane Classification using Linear Classifier with two modes
 * Perceptron learning rule and online learning
 * Gradient descent learning rule and batch learning
 
-**Hopfield network**   
+**Hopfield Neural Network**   
 Distorted Character Recognition using Hopfield Neural Network
