@@ -123,11 +123,11 @@ int main(int argc, char *argv[])
                           w[2] = w[2] + eta * (targ[i] - out[i]) * inp[i][1];
 			    
                           // error
-                          C += targ[i] - out[i];
+                          C += ( targ[i] - out[i] ) * ( targ[i] - out[i] );
                           i++;
                           printf("%d\t%lf\t%lf\t\n", i, out[i], targ[i]);
                      }
-                     error[epoch] = (0.5 * C * C);
+                     error[epoch] = (0.5 * C);
                      epoch++;
                      C = 0;
                      i = 0;
