@@ -1,13 +1,12 @@
 # Neural-Networks
 
 **Feedforward Neural Network**   
-* Backpropagation Learning | Stochastic Gradient Descent  
+* Backpropagation Learning using Stochastic Gradient Descent  
 
 **Linear Classifier**
-
-Aeroplane Classification using Linear Classifier with two modes
-* Perceptron learning rule and online learning
-* Gradient descent learning rule and batch learning
+Aeroplane Classification using Linear Classifier with two variants
+* Perceptron learning rule; mode = online learning, loss fn =  MSE
+* Gradient descent; mode = batch learning, loss fn = Cross Entropy
 
 **Hopfield Neural Network**   
 Distorted Character Recognition using Hopfield Neural Network
