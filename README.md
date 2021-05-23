@@ -1,5 +1,9 @@
 # Neural-Networks
 
+**Activation functions and Loss functions**
+ * Activation functions and its derivatives: identity, sigmoid, softmax, tanh, reLU
+ * Loss functions: Mean Squared Error, Cross Entropy    
+
 **Feedforward Neural Network**   
 * Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
     * In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches. 
