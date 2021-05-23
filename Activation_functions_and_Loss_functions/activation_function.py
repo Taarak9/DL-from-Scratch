@@ -1,6 +1,6 @@
 import numpy as np
 
-class ActLoss:
+class ActivationFunction:
 
   def __init__(self):
     pass
@@ -35,7 +35,3 @@ class ActLoss:
             return (input > 0) * 1
         else:
             return np.maximum(0, input)
-
-  def loss_functions(self):
-    #MSE and CE
-    pass
