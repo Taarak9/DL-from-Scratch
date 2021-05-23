@@ -1,8 +1,10 @@
 # Neural-Networks
 
 **Activation functions and Loss functions**
- * Activation functions and its derivatives: identity, sigmoid, softmax, tanh, reLU
- * Loss functions: Mean Squared Error, Cross Entropy    
+ * Activation functions and its derivatives
+     * Identity, Sigmoid, Softmax, Tanh, ReLU
+ * Loss functions
+     * Mean Squared Error, Cross Entropy    
 
 **Feedforward Neural Network**   
 * Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
