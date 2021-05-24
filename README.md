@@ -19,4 +19,4 @@ Aeroplane Classification using Linear Classifier with two variants
 **Hopfield Neural Network**   
 Distorted Character Recognition using Hopfield Neural Network                
                          
-To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
+To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by @3b1b.
