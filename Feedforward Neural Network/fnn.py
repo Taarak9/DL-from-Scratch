@@ -15,7 +15,7 @@ class FNN(object):
 
   def feedforward(self, a):
     for b, w in zip(self.biases, self.weights): 
-      a = sigmoid(np.dot(w, a) + b)
+      a = activation_function("sigmoid", np.dot(w, a) + b)
     return a
 
   def evaluate(self, test_data):      
