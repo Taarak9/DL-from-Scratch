@@ -1,0 +1,179 @@
+import numpy as np
+import random
+
+# Dense Layer
+class Dense_Layer:
+
+  # Initialize weights and biases
+  def __init__(self, n_inputs, n_nodes, activation_type):
+    self.n_nodes = n_nodes
+    self.activation_type = activation_type
+
+# Feedforward Neural network
+class FNN():
+
+  def __init__(self, n_inputs, loss_fn):
+    self.NN = list()
+    #sizes contains the list of number of neurons in the respective layers of the network.
+    self.sizes = [n_inputs]
+    self.n_layers = 0
+    self.n_inputs = n_inputs
+    self.weights = list()
+    self.biases = list()
+    # activation_types contains the list of activation functions used in the NN
+    self.activation_types = list()
+    self.loss_fn = loss_fn
+
+  def init_params(self, sizes):
+    self.sizes = sizes
+    self.n_layers = len(sizes)
+    # he initialization
+    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(sizes[:-1], sizes[1:])]
+    # zero initialization
+    self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+
+  # display fnn
+  def display(self):
+    print("n_inputs: ", self.n_inputs)
+    print("Weights: ", self.weights)
+    print("Biases: ", self.biases)
+    print("Layers: ", self.n_layers)
+
+  # add layer to fnn
+  def add_layer(self, n_nodes, activation_type):
+    if self.n_layers == 0:
+        # previous layer is input layer
+        layer = Dense_Layer(self.n_inputs, n_nodes, activation_type)
+    else:
+        # previous layer is hidden layer
+        layer = Dense_Layer(self.sizes[-1], n_nodes, activation_type)
+
+    self.NN.append(layer)
+    self.activation_types.append(activation_type)
+    self.sizes.append(n_nodes)
+    self.n_layers += 1
+
+  # a is the input to the nn
+  def feedforward(self, a):
+    l = 0 # layer count
+    for b, w in zip(self.biases, self.weights): 
+      a = activation_function(self.activation_types[l], np.dot(w, a) + b)
+      l += 1
+    return a
+
+  def evaluate(self, test_data):      
+    test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+    return sum(int(x == y) for (x, y) in test_results)
+
+  # Backpropagation
+  def backprop(self, x, y):
+    gradient_b = [np.zeros(b.shape) for b in self.biases]
+    gradient_w = [np.zeros(w.shape) for w in self.weights]
+
+    # feedforward
+    activation = x
+    # list to store all the activations, layer by layer
+    activations = [x] 
+    # list to store all the z vectors, layer by layer
+    zs = [] 
+    c = 0
+    for b, w in zip(self.biases, self.weights):
+        z = np.dot(w, activation) + b
+        zs.append(z)
+        activation = activation_function(self.activation_types[c], z)
+        activations.append(activation)
+        c += 1
+
+    # backward pass
+    loss_grad = loss_function(self.loss_fn, y, activations[-1], True)
+    delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
+    
+    gradient_b[-1] = delta
+    gradient_w[-1] = np.dot(delta, activations[-2].transpose())
+    for l in range(2, self.n_layers):
+        z = zs[-l]
+        d = activation_function(self.activation_types[-l], z, True)
+        delta = np.dot(self.weights[-l + 1].transpose(), delta) * d
+        gradient_b[-l] = delta
+        gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
+    return (gradient_b, gradient_w)
+
+  # updates parameters
+  def update_mini_batch(self, mini_batch, eta):
+    gradient_b = [np.zeros(b.shape) for b in self.biases]
+    gradient_w = [np.zeros(w.shape) for w in self.weights]
+    for x, y in mini_batch:
+        delta_gradient_b, delta_gradient_w = self.backprop(x, y)
+        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
+    #print("gradient ", gradient_w[0])
+    self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, gradient_w)]
+    self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
+
+  # Stochastic Gradient decsent
+  def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
+    self.init_params(self.sizes)
+    if test_data: n_test = len(test_data)
+    n = len(training_data)
+    accuracy = []
+    for j in range(epochs):
+        random.shuffle(training_data)
+        mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
+        for mini_batch in mini_batches:
+            self.update_mini_batch(mini_batch, eta)
+        if test_data:
+            print("Epoch: ", j, "Accuracy: ", self.evaluate(test_data) / n_test * 100)
+            accuracy.append(self.evaluate(test_data) / n_test * 100)
+        else:
+            print("Epoch {0} complete".format(j))
+
+    return accuracy
+
+# y and y_hat are numpy arrays
+def loss_function(name, y, y_hat, derivative=False):
+  # y - target, y_hat - output
+  # Mean Squared Error
+  if name == "mse":
+      if derivative:
+          return (y_hat - y)
+      else:
+          return np.mean((y - y_hat)**2)
+  # y - target prob distro, y_hat - output prob distro
+  # Cross Entropy
+  elif name == "ce":
+      if derivative:
+          # if activation fn is sigmoid/softmax
+          return (y_hat - y)    
+      else:
+          return -np.sum(y * np.log(y_hat))
+
+def activation_function(name, input, derivative=False):
+  if name == "identity":
+      if derivative:
+          return np.ones_like(x)
+      else:
+          return x
+  elif name == "sigmoid":
+      if derivative:
+          out = activation_function(name, input)
+          return out * ( 1 - out )
+      else:
+          return 1 / (1 + np.exp(-input))
+  elif name == "softmax":
+      if derivative:
+          out = activation_function(name, input)
+          return out * (1 - out)
+      else:
+          e_x = np.exp(input - np.max(input))
+          return e_x / np.sum(e_x, axis=1, keepdims=True)
+  elif name == "tanh":
+      if derivative:
+          out = activation_function(name, input)
+          return 1 - np.square(out)
+      else:
+          return 2 / (1 + np.exp(-2*input)) - 1
+  elif name == "relu":
+      if derivative:
+          return (input > 0) * 1
+      else:
+          return np.maximum(0, input)
