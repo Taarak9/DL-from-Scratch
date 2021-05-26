@@ -6,7 +6,7 @@ def loss_function(name, y, y_hat, derivative=False):
   # Mean Squared Error
   if name == "mse":
       if derivative:
-          return 
+          return (y_hat - y)
       else:
           return np.mean((y - y_hat)**2)
   # y - target prob distro, y_hat - output prob distro
