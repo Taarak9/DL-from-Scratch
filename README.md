@@ -9,7 +9,9 @@
 **Feedforward Neural Network**   
 * Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
     * In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches. 
-    * Then for each mini_batch we apply a single step of gradient descent, which updates the network weights and biases.    
+    * Then for each mini_batch we apply a single step of gradient descent, which updates the network weights and biases. 
+* fnn.py (v1) - Feedforward Neural Network with sigmoid activation function at each layer and cross entropy as loss function
+* generalized_fnn.py (v2) - Feedforward Neural Network with add layer functionality ( user-specified activation function ) and user-specified loss function. 
 
 **Linear Classifier**          
 Aeroplane Classification using Linear Classifier with two variants
