@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from matplotlib import pyplot as plt
 
 # Dense Layer
 class Dense_Layer:
@@ -23,6 +24,7 @@ class FNN():
     # activation_types contains the list of activation functions used in the NN
     self.activation_types = list()
     self.loss_fn = loss_fn
+    self.accuracy = list()
 
   def init_params(self, sizes):
     self.sizes = sizes
@@ -31,13 +33,6 @@ class FNN():
     self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(sizes[:-1], sizes[1:])]
     # zero initialization
     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-
-  # display fnn
-  def display(self):
-    print("n_inputs: ", self.n_inputs)
-    print("Weights: ", self.weights)
-    print("Biases: ", self.biases)
-    print("Layers: ", self.n_layers)
 
   # add layer to fnn
   def add_layer(self, n_nodes, activation_type):
@@ -61,6 +56,7 @@ class FNN():
       l += 1
     return a
 
+  # number of matches between output from NN and test data
   def evaluate(self, test_data):      
     test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
     return sum(int(x == y) for (x, y) in test_results)
@@ -111,11 +107,13 @@ class FNN():
     self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
 
   # Stochastic Gradient decsent
+  # In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches.
+  # Then for each mini_batch we apply a single step of gradient descent, which updates the network weights and biases.
+
   def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
     self.init_params(self.sizes)
     if test_data: n_test = len(test_data)
     n = len(training_data)
-    accuracy = []
     for j in range(epochs):
         random.shuffle(training_data)
         mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
@@ -123,13 +121,23 @@ class FNN():
             self.update_mini_batch(mini_batch, eta)
         if test_data:
             print("Epoch: ", j, "Accuracy: ", self.evaluate(test_data) / n_test * 100)
-            accuracy.append(self.evaluate(test_data) / n_test * 100)
+            self.accuracy.append(self.evaluate(test_data) / n_test * 100)
         else:
             print("Epoch {0} complete".format(j))
 
-    return accuracy
+  def logging(test_data=False):
+    if test_data:
+        epoch = np.arange(0, 30)
+        error = [(100 - a) for a in self.accuracy ]
 
-# y and y_hat are numpy arrays
+        plt.plot(epoch, error)
+        plt.xlabel("Epoch")
+        plt.ylabel("Error")
+        plt.show()
+    else:
+        pass
+
+# y and y_hat are list of numpy arrays
 def loss_function(name, y, y_hat, derivative=False):
   # y - target, y_hat - output
   # Mean Squared Error
