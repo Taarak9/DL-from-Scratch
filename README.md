@@ -4,7 +4,11 @@
  * Activation functions and their derivatives
      * Identity, Sigmoid, Softmax, Tanh, ReLU
  * Loss functions and their derivatives
-     * Mean Squared Error, Cross Entropy    
+     * Mean Squared Error, Cross Entropy   
+ 
+**Optimizers**
+* Stochastic mini-batch Gradient Descent
+* ...
 
 **Feedforward Neural Network**   
 * Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
