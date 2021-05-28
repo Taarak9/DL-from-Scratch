@@ -125,7 +125,6 @@ class FNN():
   '''
 
   def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None, task=None):
-    self.init_params(self.sizes, epochs)
     if test_data: n_test = len(test_data)
     n = len(training_data)
     for j in range(epochs):
@@ -135,7 +134,6 @@ class FNN():
             self.update_mini_batch(mini_batch, eta)
         if test_data:
             self.tracking(j, epochs, test_data, task)
-            self.logging(test_data)
 
   def tracking(self, epoch, epochs, test_data=None, task=None):
     if test_data:
@@ -157,6 +155,12 @@ class FNN():
         plt.show()
     else:
         pass
+
+  def run(self, training_data, epochs, mini_batch_size, eta, test_data=None, task=None):
+      self.init_params(self.sizes, epochs)
+      self.SGD(training_data, epochs, mini_batch_size, eta, test_data, task)
+      if test_data:
+          self.logging(test_data)
 
 # y and y_hat are list of numpy arrays
 def loss_function(name, y, y_hat, derivative=False):
