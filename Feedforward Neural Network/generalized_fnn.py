@@ -134,13 +134,18 @@ class FNN():
         for mini_batch in mini_batches:
             self.update_mini_batch(mini_batch, eta)
         if test_data:
-            print("Epoch: ", j, "Accuracy: ", self.evaluate(test_data, task) / n_test * 100)
-            self.accuracy.append(self.evaluate(test_data, task) / n_test * 100)
-            if j == epochs - 1:
-                print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
-                      "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
-        else:
-            print("Epoch {0} complete".format(j))
+            self.tracking(j, epochs, test_data, task)
+            self.logging(test_data)
+
+  def tracking(self, epoch, epochs, test_data=None, task=None):
+    if test_data:
+        print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task) / n_test * 100)
+        self.accuracy.append(self.evaluate(test_data, task) / n_test * 100)
+        if epoch == epochs - 1:
+              print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
+                    "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
+    else:
+        print("Epoch {0} complete".format(epoch))
 
   def logging(self, test_data=None):
     if test_data:
