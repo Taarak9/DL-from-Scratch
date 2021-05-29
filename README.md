@@ -8,7 +8,7 @@
  
 **Optimizers**
 * Stochastic mini-batch Gradient Descent
-* ...
+* Momentum based Gradient Descent
 
 **Feedforward Neural Network**   
 * Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
