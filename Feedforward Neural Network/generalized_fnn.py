@@ -73,7 +73,7 @@ class FNN():
         pass
     return sum(int(x == y) for (x, y) in test_results)
 
-  # Backpropagation
+  # Backpropagation for one example
   def backprop(self, x, y):
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
@@ -84,6 +84,7 @@ class FNN():
     activations = [x] 
     # list to store all the z vectors, layer by layer
     zs = [] 
+    # c: layer counter
     c = 0
     for b, w in zip(self.biases, self.weights):
         z = np.dot(w, activation) + b
@@ -92,15 +93,17 @@ class FNN():
         activations.append(activation)
         c += 1
 
-    # backward pass
     loss_grad = loss_function(self.loss_fn, y, activations[-1], True)
+    # delta: errors of the output layer
     delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
     
     gradient_b[-1] = delta
     gradient_w[-1] = np.dot(delta, activations[-2].transpose())
+    # backward pass
     for l in range(2, self.n_layers):
         z = zs[-l]
         d = activation_function(self.activation_types[-l], z, True)
+        # Here delta is errors of the layer n_layers - l
         delta = np.dot(self.weights[-l + 1].transpose(), delta) * d
         gradient_b[-l] = delta
         gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
