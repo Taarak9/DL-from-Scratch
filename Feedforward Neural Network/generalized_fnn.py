@@ -21,6 +21,8 @@ class FNN():
     self.n_inputs = n_inputs
     self.weights = list()
     self.biases = list()
+    self.prev_update_w = list()
+    self.prev_update_b = list()
     # activation_types contains the list of activation functions used in the NN
     self.activation_types = list()
     self.epoch_list = list()
@@ -104,8 +106,16 @@ class FNN():
         gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
     return (gradient_b, gradient_w)
 
-  # updates parameters
-  def update_mini_batch(self, mini_batch, eta):
+
+  def get_batch_size(self, training_data, mode, mini_batch_size):
+    if mode == "online":
+        return 1
+    elif mode == "mini_batch":
+        return mini_batch_size
+    elif mode == "batch"
+        return len(training_data)
+
+  def update_GD(self, mini_batch, eta):
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
@@ -116,29 +126,58 @@ class FNN():
     self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, gradient_w)]
     self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
 
-  # Stochastic Gradient decsent
-  # In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches.
-  # Then for each mini_batch we apply a single step of gradient descent, which updates the network weights and biases.
-  '''
-  eta - learning rate
-  task - Classification / Regression
-  '''
+  def update_MGD(self, mini_batch, gamma, eta):
+    gradient_b = [np.zeros(b.shape) for b in self.biases]
+    gradient_w = [np.zeros(w.shape) for w in self.weights]
+    for x, y in mini_batch:
+        delta_gradient_b, delta_gradient_w = self.backprop(x, y)
+        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
 
-  def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None, task=None):
-    if test_data: n_test = len(test_data)
+    update_w = gamma * self.prev_update_w + eta * gradient_w
+    self.weights = [w - uw for w, uw in zip(self.weights, update_w)]
+    update_b = gamma * self.prev_update_b + eta * gradient_b
+    self.biases = [b - ub for b, ub in zip(self.biases, update_b)]
+
+    self.prev_update_w = update_w
+    self.prev_update_b = update_b
+
+  '''
+  epochs: max epochs
+  eta - learning rate
+  optimizer: GD ( Gradient Descent), MGD ( Momentum based GD )
+  mode: online ( Stochastic GD ), mini-batch ( Mini-batch GD ), batch ( Batch GD)
+  shuffle: True/False
+  gamma - momentum value
+  task: classification/regression
+  '''
+  def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=False, test_data=None, task=None):
     n = len(training_data)
-    for j in range(epochs):
-        random.shuffle(training_data)
-        mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
+    batch_size = self.get_batch_size(training_data, mode, mini_batch_size)
+
+    if optimizer = "MGD:
+        self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
+        self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
+    
+    for e in range(epochs):
+        if shuffle:
+            random.shuffle(training_data)
+        
+        mini_batches = [training_data[k:k+batch_size] for k in range(0, n, batch_size)]
+        
         for mini_batch in mini_batches:
-            self.update_mini_batch(mini_batch, eta)
+            if optimizer == "GD":
+                self.update_GD(mini_batch, eta)
+            elif optimizer == "MGD"
+                self.update_MGD(mini_batch, gamma, eta)
+        
         if test_data:
-            self.tracking(j, epochs, test_data, task)
+            FNN.tracking(e, epochs, test_data, task)
 
   def tracking(self, epoch, epochs, test_data=None, task=None):
     if test_data:
-        print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task) / n_test * 100)
-        self.accuracy.append(self.evaluate(test_data, task) / n_test * 100)
+        print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task) / len(test_data) * 100)
+        self.accuracy.append(self.evaluate(test_data, task) / len(test_data) * 100)
         if epoch == epochs - 1:
               print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
                     "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
@@ -156,11 +195,13 @@ class FNN():
     else:
         pass
 
-  def run(self, training_data, epochs, mini_batch_size, eta, test_data=None, task=None):
-      self.init_params(self.sizes, epochs)
-      self.SGD(training_data, epochs, mini_batch_size, eta, test_data, task)
-      if test_data:
-          self.logging(test_data)
+  def run(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=False, test_data=None, task=None):
+    self.init_params(self.sizes, epochs)
+
+    self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma, optimizer, mode, shuffle, test_data, task)
+      
+    if test_data:
+        self.logging(test_data)
 
 # y and y_hat are list of numpy arrays
 def loss_function(name, y, y_hat, derivative=False):
