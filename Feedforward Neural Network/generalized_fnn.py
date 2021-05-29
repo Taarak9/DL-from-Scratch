@@ -74,9 +74,12 @@ class FNN():
     return sum(int(x == y) for (x, y) in test_results)
 
   # Backpropagation for one example
-  def backprop(self, x, y):
-    gradient_b = [np.zeros(b.shape) for b in self.biases]
+  def backprop(self, x, y, weights=None, biases=None):
+    if weights: self.weights = weights
+    if biases: self.biases = biases
+
     gradient_w = [np.zeros(w.shape) for w in self.weights]
+    gradient_b = [np.zeros(b.shape) for b in self.biases]
 
     # feedforward
     activation = x
@@ -86,7 +89,7 @@ class FNN():
     zs = [] 
     # c: layer counter
     c = 0
-    for b, w in zip(self.biases, self.weights):
+    for w, b in zip(self.weights, self.biases):
         z = np.dot(w, activation) + b
         zs.append(z)
         activation = activation_function(self.activation_types[c], z)
@@ -97,17 +100,18 @@ class FNN():
     # delta: errors of the output layer
     delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
     
-    gradient_b[-1] = delta
     gradient_w[-1] = np.dot(delta, activations[-2].transpose())
-    # backward pass
+    gradient_b[-1] = delta
+    # backpropagate the error
     for l in range(2, self.n_layers):
         z = zs[-l]
         d = activation_function(self.activation_types[-l], z, True)
         # Here delta is errors of the layer n_layers - l
         delta = np.dot(self.weights[-l + 1].transpose(), delta) * d
-        gradient_b[-l] = delta
         gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
-    return (gradient_b, gradient_w)
+        gradient_b[-l] = delta
+
+    return (gradient_w, gradient_b)
 
 
   def get_batch_size(self, training_data, mode, mini_batch_size):
@@ -115,7 +119,7 @@ class FNN():
         return 1
     elif mode == "mini_batch":
         return mini_batch_size
-    elif mode == "batch"
+    elif mode == "batch":
         return len(training_data)
 
   def update_GD(self, mini_batch, eta):
@@ -145,6 +149,28 @@ class FNN():
     self.prev_update_w = update_w
     self.prev_update_b = update_b
 
+  def update_NAG(self, mini_batch, eta, gamma):
+    gradient_w = [np.zeros(w.shape) for w in self.weights]
+    gradient_b = [np.zeros(b.shape) for b in self.biases]
+
+    # w look_ahead partial update
+    update_w = gamma * self.prev_update_w
+    update_b = gamma * self.prev_update_b
+
+    for x, y in mini_batch:
+        delta_gradient_w, delta_gradient_b = FNN.backprop(x, y, self.weights - update_w, self.biases - update_b)
+        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
+        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]       
+
+    # full update
+    update_w = gamma * self.prev_update_w + eta * gradient_w
+    self.weights = [w - uw for w, uw in zip(self.weights, update_w)]
+    update_b = gamma * self.prev_update_b + eta * gradient_b
+    self.biases = [b - ub for b, ub in zip(self.biases, update_b)]
+    
+    self.prev_update_w = update_w
+    self.prev_update_b = update_b
+
   '''
   epochs: max epochs
   eta - learning rate
@@ -154,11 +180,11 @@ class FNN():
   gamma - momentum value
   task: classification/regression
   '''
-  def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=False, test_data=None, task=None):
+  def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
     n = len(training_data)
     batch_size = self.get_batch_size(training_data, mode, mini_batch_size)
 
-    if optimizer = "MGD:
+    if optimizer == "MGD":
         self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
         self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
     
@@ -171,8 +197,10 @@ class FNN():
         for mini_batch in mini_batches:
             if optimizer == "GD":
                 self.update_GD(mini_batch, eta)
-            elif optimizer == "MGD"
-                self.update_MGD(mini_batch, gamma, eta)
+            elif optimizer == "MGD":
+                self.update_MGD(mini_batch, eta, gamma)
+            elif optimizer == "NAG":
+                self.update_NAG(mini_batch, eta, gamma)
         
         if test_data:
             FNN.tracking(e, epochs, test_data, task)
