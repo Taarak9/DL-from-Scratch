@@ -9,13 +9,14 @@
 **Optimizers**
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
+* ...
 
 **Feedforward Neural Network**   
-* Backpropagation ( Computes the gradient of Loss function ) Learning using mini-batch stochastic Gradient Descent  
+* Backpropagation ( Computes the gradient of Loss function ) Learning using user-specified optimizer  
     * In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches. 
     * Then for each mini_batch we apply a single step of gradient descent, which updates the network weights and biases. 
 * fnn.py (v1) - Feedforward Neural Network with sigmoid activation function at each layer and cross entropy as loss function
-* generalized_fnn.py (v2) - Feedforward Neural Network with add layer functionality ( user-specified activation function ) and user-specified loss function. 
+* generalized_fnn.py (v2) - Feedforward Neural Network with user-specified activation functions for layers, optimizer and loss function. 
 
 **Linear Classifier**          
 Aeroplane Classification using Linear Classifier with two variants
