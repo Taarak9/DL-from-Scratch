@@ -174,7 +174,7 @@ class FNN():
   '''
   epochs: max epochs
   eta - learning rate
-  optimizer: GD ( Gradient Descent), MGD ( Momentum based GD )
+  optimizer: GD ( Gradient Descent), MGD ( Momentum based GD ), NAG ( Nesterov accelerated GD )
   mode: online ( Stochastic GD ), mini-batch ( Mini-batch GD ), batch ( Batch GD)
   shuffle: True/False
   gamma - momentum value
@@ -226,7 +226,7 @@ class FNN():
     else:
         pass
 
-  def run(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=False, test_data=None, task=None):
+  def compile(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
     self.init_params(self.sizes, epochs)
 
     self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma, optimizer, mode, shuffle, test_data, task)
