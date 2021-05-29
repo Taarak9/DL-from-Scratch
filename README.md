@@ -9,6 +9,7 @@
 **Optimizers**
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
+* Nesterov accelerated Gradient Descent
 * ...
 
 **Feedforward Neural Network**   
