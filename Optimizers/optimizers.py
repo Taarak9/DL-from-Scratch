@@ -30,7 +30,7 @@ class Optimizers:
     self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, gradient_w)]
     self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
 
-  def update_MGD(self, mini_batch, gamma, eta):
+  def update_MGD(self, mini_batch, eta, gamma):
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
@@ -55,7 +55,7 @@ class Optimizers:
   gamma - momentum value
   task: classification/regression
   '''
-  def Optimizer(self, training_data, epochs, eta, optimizer="GD", mode="batch", shuffle=False, gamma=None, test_data=None, task=None):
+  def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=False, test_data=None, task=None):
     n = len(training_data)
     batch_size = self.get_batch_size(training_data, mode, mini_batch_size)
 
@@ -73,7 +73,7 @@ class Optimizers:
             if optimizer == "GD":
                 self.update_GD(mini_batch, eta)
             elif optimizer == "MGD"
-                self.update_MGD(mini_batch, gamma, eta)
+                self.update_MGD(mini_batch, eta, gamma)
         
         if test_data:
             FNN.tracking(e, epochs, test_data, task)
