@@ -2,20 +2,152 @@ import numpy as np
 import random
 from matplotlib import pyplot as plt
 
-# Dense Layer
 class Dense_Layer:
+  """Dense Layer Class. """
+  def __init__(self, n_nodes, activation_type):
+    """
+    Creates the Dense layer.
 
-  # Initialize weights and biases
-  def __init__(self, n_inputs, n_nodes, activation_type):
+    Parameters
+    ----------
+    n_nodes: int
+        Number of nodes in the layer.
+    activation_type: str
+        Activation function used in the layer.
+        Options:
+            identity,
+            sigmoid,
+            softmax,
+            tanh,
+            relu
+    """
+
     self.n_nodes = n_nodes
     self.activation_type = activation_type
 
-# Feedforward Neural network
 class FNN():
+  """
+  Feedforward Neural network Class.
+
+  Attributes
+  ----------
+  NN: list
+      List of all the layers in the NN.
+
+  sizes: list
+      List of number of nodes in the respective layers of the NN.
+
+  n_layers: int
+      Total number of layers in the NN.
+
+  n_inputs: int
+      Number of nodes in the input layer.
+
+  weights: list of numpy arrays
+      Each array has the weights in a particular layer.
+
+  biases: list of numpy arrays
+      Each array has the biases in a particular layer.
+
+  prev_update_w: list
+      List of all previous updates of weights in NN.
+
+  prev_update_b: list
+      List of all previous updates of weights in NN.
+
+  activation_types: list
+      List of all the activation functions used
+      in the respective layers of NN.
+
+  loss_fn: str
+      Type of loss function used in the NN.
+      Options:
+          mse ( Mean squared error )
+          ce ( Cross entropy )
+
+  epoch_list: list
+      List of numbers from 0 to max epochs.
+
+  accuracy: list
+      List to store the accuracy at each epoch.
+
+  Methods
+  -------
+  init_params(sizes, epochs):
+      Initializes parameters in the NN.
+
+  get_params():
+      Return weights and biases of the NN.
+
+  add_layer(n_nodes, activation_type):
+      Adds a layer to the NN.
+
+  feedforward(a):
+      Return the output of NN if input is a. 
+
+  evaluate(test_data, task):      
+      Return the number of test inputs for which the
+      NN outputs the correct result.
+
+  backprop(x, y, weights=None, biases=None):
+      Returns the gradients of weights and biases
+      for a given example.
+
+  get_batch_size(training_data, mode, mini_batch_size):
+      Returns the batch size given mode.
+
+  update_GD(mini_batch, eta):
+      Updates weights and biases after 
+      applying Gradient Descent (GD)
+      on the mini batch.
+
+  update_MGD(mini_batch, gamma, eta):
+      Updates weights and biases after 
+      applying Momentum based Gradient Descent (MGD)
+      on the mini batch.
+
+  update_NAG(mini_batch, eta, gamma):
+      Updates weights and biases after 
+      applying Nesterov accerelated Gradient Descent (NAG)
+      on the mini batch.
+
+  Optimizer(training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+      Runs the optimizer on the training data
+      for given number of epochs.
+
+  tracking(epoch, epochs, test_data=None, task=None):
+      If test data is given it tracks the 
+      accuracy after each epoch.
+      If test data isn't given it tracks
+      the number of epochs completed.
+
+  logging(test_data=None):
+      Given test data it plots 
+      Epoch vs Error graph.
+
+  compile(training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+      Compiles the NN i.e
+      Initializes the parameters
+      and runs the optimizer.
+  """
 
   def __init__(self, n_inputs, loss_fn):
+    """
+    Creates the Feedforward Neural Network
+
+    Parameters
+    ----------
+    n_inputs: int
+        Number of nodes in the input layer.
+
+    loss_fn: str
+      Type of loss function used in the NN.
+      Options:
+          mse ( Mean squared error )
+          ce ( Cross entropy )
+    """
+
     self.NN = list()
-    #sizes contains the list of number of neurons in the respective layers of the network.
     self.sizes = [n_inputs]
     self.n_layers = 0
     self.n_inputs = n_inputs
@@ -23,26 +155,75 @@ class FNN():
     self.biases = list()
     self.prev_update_w = list()
     self.prev_update_b = list()
-    # activation_types contains the list of activation functions used in the NN
     self.activation_types = list()
-    self.epoch_list = list()
     self.loss_fn = loss_fn
+    self.epoch_list = list()
     self.accuracy = list()
 
   def init_params(self, sizes, epochs):
+    """
+    Initializes parameters in the NN.
+
+    The weights and biases for the NN
+    are initialized randomly, using a Gaussian
+    distribution with mean 0, and variance 1.
+
+    For weights he initialization is also used.
+
+    Parameters
+    ----------
+    sizes: list
+        List of number of nodes in the respective layers of the NN.
+
+    epochs: int
+        Number of maximum epochs 
+
+    Returns
+    ------
+    None
+    """
+
     self.sizes = sizes
     self.n_layers = len(sizes)
     # he initialization
     self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(sizes[:-1], sizes[1:])]
-    # zero initialization
     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
     self.epoch_list = np.arange(0, epochs)
 
   def get_params(self):
+    """
+    Return weights and biases of the NN.
+    
+    Returns
+    -------
+    List of weights and biases
+    """
     return [self.weights, self.biases]
 
-  # add layer to fnn
+
   def add_layer(self, n_nodes, activation_type):
+    """
+    Adds a layer to the NN.
+   
+    Parameters
+    ----------
+    n_nodes: int
+        Number of nodes in the layer.
+
+    activation_type: str
+        Activation function used in the layer.
+        Options:
+            identity
+            sigmoid
+            softmax
+            tanh
+            relu
+
+    Returns
+    -------
+    None
+    """
+
     if self.n_layers == 0:
         # previous layer is input layer
         layer = Dense_Layer(self.n_inputs, n_nodes, activation_type)
@@ -55,16 +236,47 @@ class FNN():
     self.sizes.append(n_nodes)
     self.n_layers += 1
 
-  # a is the input to the nn
   def feedforward(self, a):
+    """
+    Return the output of NN if input is a. 
+
+    Parameter
+    ---------
+    a: array
+        Inputs to the NN.
+
+    Returns
+    -------
+    a: array
+        Output of NN
+    """
+
     l = 0 # layer count
     for b, w in zip(self.biases, self.weights): 
       a = activation_function(self.activation_types[l], np.dot(w, a) + b)
       l += 1
     return a
 
-  # number of matches between output from NN and test data
-  def evaluate(self, test_data, type):      
+  def evaluate(self, test_data, task): 
+    """
+    Return the number of test inputs for which the NN outputs the correct result.
+   
+    Parameters
+    ----------
+    test_data: list
+        List of tuples (x, y)
+
+    type: str
+        Type of task.
+        Options:
+            classification
+            regression
+
+    Returns
+    -------
+    Returns int 
+    """
+
     if type == "classification":
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
     elif type == "regression":
@@ -73,15 +285,37 @@ class FNN():
         pass
     return sum(int(x == y) for (x, y) in test_results)
 
-  # Backpropagation for one example
   def backprop(self, x, y, weights=None, biases=None):
+    """
+    Returns the gradients of weights and biases for a given example.
+
+    Backpropagates the error.
+
+    Parameters
+    ----------
+    x: tuple
+        Input
+    
+    y: tuple
+        Output
+
+    weights: list
+        Default: None
+
+    biases: list
+        Default: None
+
+    Returns
+    -------
+    (gradient_w, gradient_b): tuple of lists of numpy arrays
+    """
+
     if weights: self.weights = weights
     if biases: self.biases = biases
 
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     gradient_b = [np.zeros(b.shape) for b in self.biases]
 
-    # feedforward
     activation = x
     # list to store all the activations, layer by layer
     activations = [x] 
@@ -89,6 +323,7 @@ class FNN():
     zs = [] 
     # c: layer counter
     c = 0
+    # feedforward
     for w, b in zip(self.weights, self.biases):
         z = np.dot(w, activation) + b
         zs.append(z)
@@ -115,6 +350,28 @@ class FNN():
 
 
   def get_batch_size(self, training_data, mode, mini_batch_size):
+    """
+    Returns the batch size given mode.
+
+    Parameters
+    ----------
+    training_data: list
+        List of tuples (x, y)
+
+    mode: str
+        Options:
+            online
+            mini_batch
+            batch
+    
+    mini_batch_size: int
+        Size of the mini_batch
+
+    Returns
+    -------
+    Returns int ( batch size )
+    """
+
     if mode == "online":
         return 1
     elif mode == "mini_batch":
@@ -123,6 +380,26 @@ class FNN():
         return len(training_data)
 
   def update_GD(self, mini_batch, eta):
+    """
+    Updates parameters using GD.
+
+    Updates weights and biases after 
+    applying Gradient Descent (GD)
+    on the mini batch.
+
+    Parameters
+    ----------
+    mini_batch: list
+        List of tuples (x, y)
+
+    eta: float
+        Learning rate
+
+    Returns
+    -------
+    None
+    """
+
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
@@ -133,7 +410,30 @@ class FNN():
     self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, gradient_w)]
     self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
 
-  def update_MGD(self, mini_batch, gamma, eta):
+  def update_MGD(self, mini_batch, eta, gamma):
+    """
+    Updates parameters using MGD.
+
+    Updates weights and biases after applying 
+    Momentum based Gradient Descent (GD)
+    on the mini batch.
+
+    Parameters
+    ----------
+    mini_batch: list
+        List of tuples (x, y)
+
+    eta: float
+        Learning rate
+
+    gamma: float
+        Momentum value
+
+    Returns
+    -------
+    None
+    """
+
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
@@ -150,6 +450,29 @@ class FNN():
     self.prev_update_b = update_b
 
   def update_NAG(self, mini_batch, eta, gamma):
+    """
+    Updates parameters using NAG.
+
+    Updates weights and biases after applying 
+    Nesterov accerelated Gradient Descent (GD)
+    on the mini batch.
+
+    Parameters
+    ----------
+    mini_batch: list
+        List of tuples (x, y)
+
+    eta: float
+        Learning rate
+
+    gamma: float
+        Momentum value
+
+    Returns
+    -------
+    None
+    """
+
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     gradient_b = [np.zeros(b.shape) for b in self.biases]
 
@@ -171,16 +494,63 @@ class FNN():
     self.prev_update_w = update_w
     self.prev_update_b = update_b
 
-  '''
-  epochs: max epochs
-  eta - learning rate
-  optimizer: GD ( Gradient Descent), MGD ( Momentum based GD ), NAG ( Nesterov accelerated GD )
-  mode: online ( Stochastic GD ), mini-batch ( Mini-batch GD ), batch ( Batch GD)
-  shuffle: True/False
-  gamma - momentum value
-  task: classification/regression
-  '''
+
   def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+    """
+    Runs the optimizer on the training data for given number of epochs.
+    
+    Parameters
+    ----------
+    training_data: list
+        List of tuples (x, y)
+
+    epochs: int
+        Maximum number of epochs.
+
+    mini_batch_size: int
+        Size of the mini_batch
+
+    eta: float
+        Learning rate.
+
+    gamma: float
+        Momentum value
+        Default: None   
+
+    optimizer: str
+        Type of optimizer
+        Options:
+            GD ( Gradient Descent)
+            MGD ( Momentum based GD )
+            NAG ( Nesterov accelerated GD )
+        Default: GD
+
+    mode: str
+        Mode of Learning
+        Options:
+            online ( Stochastic GD )
+            mini-batch ( Mini-batch GD )
+            batch ( Batch GD)
+        Default: batch
+
+    shuffle: bool
+        Random shuffle the training data.
+        Default: True
+
+    test_data: list
+        List of tuples (x, y)
+
+    type: str
+        Type of task.
+        Options:
+            classification
+            regression
+
+    Returns
+    -------
+    None
+    """
+
     n = len(training_data)
     batch_size = self.get_batch_size(training_data, mode, mini_batch_size)
 
@@ -206,6 +576,34 @@ class FNN():
             FNN.tracking(e, epochs, test_data, task)
 
   def tracking(self, epoch, epochs, test_data=None, task=None):
+    """
+    Tracks the status.
+
+    If test data is given it tracks the accuracy after each epoch.
+    If test data isn't given it tracks the number of epochs completed.
+
+    Parameters
+    ----------
+    epoch: int
+        Current epoch
+
+    epochs: int
+        Maximum number of epochs. 
+
+    test_data: list
+        List of tuples (x, y)
+
+    type: str
+        Type of task.
+        Options:
+            classification
+            regression
+
+    Returns
+    -------
+    None
+    """
+
     if test_data:
         print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task) / len(test_data) * 100)
         self.accuracy.append(self.evaluate(test_data, task) / len(test_data) * 100)
@@ -216,6 +614,19 @@ class FNN():
         print("Epoch {0} complete".format(epoch))
 
   def logging(self, test_data=None):
+    """
+    Given test data it plots Epoch vs Error graph.
+
+    Parameter
+    ---------
+    test_data: list
+        List of tuples (x, y)
+
+    Returns
+    -------
+    None
+    """
+
     if test_data:
         error = [(100 - a) for a in self.accuracy ]
 
@@ -227,6 +638,64 @@ class FNN():
         pass
 
   def compile(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+    """
+    Compiles the NN.
+      
+    Initializes the parameters, runs the optimizer
+    and plots epoch vs error graph given test data.
+    
+    Parameters
+    ----------
+    training_data: list
+        List of tuples (x, y)
+
+    epochs: int
+        Maximum number of epochs.
+
+    mini_batch_size: int
+        Size of the mini_batch
+
+    eta: float
+        Learning rate.
+
+    gamma: float
+        Momentum value
+        Default: None   
+
+    optimizer: str
+        Type of optimizer
+        Options:
+            GD ( Gradient Descent)
+            MGD ( Momentum based GD )
+            NAG ( Nesterov accelerated GD )
+        Default: GD
+
+    mode: str
+        Mode of Learning
+        Options:
+            online ( Stochastic GD )
+            mini-batch ( Mini-batch GD )
+            batch ( Batch GD)
+        Default: batch
+
+    shuffle: bool
+        Random shuffle the training data.
+        Default: True
+
+    test_data: list
+        List of tuples (x, y)
+
+    type: str
+        Type of task.
+        Options:
+            classification
+            regression
+
+    Returns
+    -------
+    None
+    """
+
     self.init_params(self.sizes, epochs)
 
     self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma, optimizer, mode, shuffle, test_data, task)
@@ -234,8 +703,33 @@ class FNN():
     if test_data:
         self.logging(test_data)
 
-# y and y_hat are list of numpy arrays
 def loss_function(name, y, y_hat, derivative=False):
+  """
+  Computes the loss and its derivative
+
+  Parameters
+  ----------
+  name: str
+      Type of loss function.
+      Options:
+          mse ( Mean squared error )
+          ce ( Cross entropy ) 
+               
+  y: list 
+      List of numpy arrays ( target )
+  
+  y_hat: list
+      List of numpy arrays ( output )
+
+  derivative: bool
+      If true, returns the derivative of loss.
+      Default: False
+
+  Returns
+  -------
+  List
+  """
+
   # y - target, y_hat - output
   # Mean Squared Error
   if name == "mse":
@@ -253,6 +747,31 @@ def loss_function(name, y, y_hat, derivative=False):
           return -np.sum(y * np.log(y_hat))
 
 def activation_function(name, input, derivative=False):
+  """
+  Computes the activation function and its derivative.
+
+  Parameters
+  ----------
+  name: str
+      Activation function name.
+        Options:
+            identity
+            sigmoid
+            softmax
+            tanh
+            relu  
+
+  input: int/float/list
+
+  derivative: bool
+      If true, returns the derivative of loss.
+      Default: False
+
+  Returns
+  -------
+  None
+  """
+
   if name == "identity":
       if derivative:
           return np.ones_like(x)
