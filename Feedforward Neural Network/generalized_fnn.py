@@ -224,12 +224,7 @@ class FNN():
     None
     """
 
-    if self.n_layers == 0:
-        # previous layer is input layer
-        layer = Dense_Layer(self.n_inputs, n_nodes, activation_type)
-    else:
-        # previous layer is hidden layer
-        layer = Dense_Layer(self.sizes[-1], n_nodes, activation_type)
+    layer = Dense_Layer(n_nodes, activation_type)
 
     self.NN.append(layer)
     self.activation_types.append(activation_type)
@@ -714,7 +709,7 @@ def loss_function(name, y, y_hat, derivative=False):
       Options:
           mse ( Mean squared error )
           ce ( Cross entropy ) 
-               
+
   y: list 
       List of numpy arrays ( target )
   
@@ -801,3 +796,4 @@ def activation_function(name, input, derivative=False):
           return (input > 0) * 1
       else:
           return np.maximum(0, input)
+
