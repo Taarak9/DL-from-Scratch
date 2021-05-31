@@ -494,7 +494,7 @@ class FNN():
     self.prev_update_b = update_b
 
 
-  def Optimizer(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+  def Optimizer(self, training_data, epochs, mini_batch_size=None, eta=1, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
     """
     Runs the optimizer on the training data for given number of epochs.
     
@@ -557,6 +557,7 @@ class FNN():
         self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
         self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
     
+    print("---------------Status---------------")
     for e in range(epochs):
         if shuffle:
             random.shuffle(training_data)
@@ -637,13 +638,14 @@ class FNN():
         error = [(100 - a) for a in self.accuracy ]
 
         plt.plot(self.epoch_list, error)
+        plt.title("Epoch vs Error")
         plt.xlabel("Epoch")
         plt.ylabel("Error")
         plt.show()
     else:
         pass
 
-  def compile(self, training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+  def compile(self, training_data, test_data=None):
     """
     Compiles the NN.
       
@@ -655,53 +657,38 @@ class FNN():
     training_data: list
         List of tuples (x, y)
 
-    epochs: int
-        Maximum number of epochs.
-
-    mini_batch_size: int
-        Size of the mini_batch
-
-    eta: float
-        Learning rate.
-
-    gamma: float
-        Momentum value
-        Default: None   
-
-    optimizer: str
-        Type of optimizer
-        Options:
-            GD ( Gradient Descent)
-            MGD ( Momentum based GD )
-            NAG ( Nesterov accelerated GD )
-        Default: GD
-
-    mode: str
-        Mode of Learning
-        Options:
-            online ( Stochastic GD )
-            mini-batch ( Mini-batch GD )
-            batch ( Batch GD)
-        Default: batch
-
-    shuffle: bool
-        Random shuffle the training data.
-        Default: True
-
     test_data: list
         List of tuples (x, y)
-
-    type: str
-        Type of task.
-        Options:
-            classification
-            regression
 
     Returns
     -------
     None
     """
 
+    epochs = int(input("Number of epochs: "))
+
+    print("Optimizer types available:")
+    print("GD (Gradient Desecent)")
+    print("MGD (Momentum based Gradient Desecent)")
+    print("NAG (Nesterov accerelated Gradient Desecent)")
+    optimizer = input("Optimizer: ")
+    if (optimizer == "MGD" or optimizer == "NAG"):
+        gamma = float(input("gamma (momentum): "))
+    else:
+        gamma = None
+    
+    eta = float(input("Learning rate: "))
+    
+    mode = input("learning mode (online/mini_batch/batch): ")
+    if mode == "mini_batch":
+        mini_batch_size = int(input("Mini-batch size: "))
+    else:
+        mini_batch_size = None
+    
+    shuffle = bool(input("Random shuffle training data (True/False): "))
+
+    task = input("task (classification/regression): ")
+    
     self.init_params(self.sizes, epochs)
 
     self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma, optimizer, mode, shuffle, test_data, task)
