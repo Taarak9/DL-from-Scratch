@@ -183,11 +183,12 @@ class FNN():
     None
     """
 
-    self.sizes = sizes
+    #self.sizes = sizes
     self.n_layers = len(sizes)
     # he initialization
-    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(sizes[:-1], sizes[1:])]
+    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(self.sizes[:-1], self.sizes[1:])]
     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+    
     self.epoch_list = np.arange(0, epochs)
 
   def get_params(self):
@@ -272,12 +273,12 @@ class FNN():
     Returns int 
     """
 
-    if type == "classification":
+    if task == "classification":
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
-    elif type == "regression":
+    elif task == "regression":
         test_results = [(self.feedforward(x), y) for (x, y) in test_data]
     else:
-        pass
+        return -1
     return sum(int(x == y) for (x, y) in test_results)
 
   def backprop(self, x, y, weights=None, biases=None):
@@ -319,7 +320,7 @@ class FNN():
     # c: layer counter
     c = 0
     # feedforward
-    for w, b in zip(self.weights, self.biases):
+    for b, w in zip(self.biases, self.weights):
         z = np.dot(w, activation) + b
         zs.append(z)
         activation = activation_function(self.activation_types[c], z)
@@ -338,8 +339,8 @@ class FNN():
         d = activation_function(self.activation_types[-l], z, True)
         # Here delta is errors of the layer n_layers - l
         delta = np.dot(self.weights[-l + 1].transpose(), delta) * d
-        gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
         gradient_b[-l] = delta
+        gradient_w[-l] = np.dot(delta, activations[-l - 1].transpose())
 
     return (gradient_w, gradient_b)
 
@@ -398,12 +399,15 @@ class FNN():
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
-        delta_gradient_b, delta_gradient_w = self.backprop(x, y)
-        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]
-        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
+        delta_gradient_w, delta_gradient_b = self.backprop(x, y)
+        gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
 
-    self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, gradient_w)]
-    self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, gradient_b)]
+    self.weights = [w - (eta / len(mini_batch)) * gw 
+            for w, gw in zip(self.weights, gradient_w)]
+    self.biases = [b - (eta / len(mini_batch)) * gb 
+            for b, gb in zip(self.biases, gradient_b)]
+    
 
   def update_MGD(self, mini_batch, eta, gamma):
     """
@@ -432,9 +436,9 @@ class FNN():
     gradient_b = [np.zeros(b.shape) for b in self.biases]
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
-        delta_gradient_b, delta_gradient_w = self.backprop(x, y)
-        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]
-        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
+        delta_gradient_w, delta_gradient_b = self.backprop(x, y)
+        gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
 
     update_w = gamma * self.prev_update_w + eta * gradient_w
     self.weights = [w - uw for w, uw in zip(self.weights, update_w)]
@@ -476,9 +480,9 @@ class FNN():
     update_b = gamma * self.prev_update_b
 
     for x, y in mini_batch:
-        delta_gradient_w, delta_gradient_b = FNN.backprop(x, y, self.weights - update_w, self.biases - update_b)
-        gradient_w = [nw + dnw for nw, dnw in zip(gradient_w, delta_gradient_w)]
-        gradient_b = [nb + dnb for nb, dnb in zip(gradient_b, delta_gradient_b)]       
+        delta_gradient_w, delta_gradient_b = self.backprop(x, y, self.weights - update_w, self.biases - update_b)
+        gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
+        gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]       
 
     # full update
     update_w = gamma * self.prev_update_w + eta * gradient_w
@@ -568,7 +572,14 @@ class FNN():
                 self.update_NAG(mini_batch, eta, gamma)
         
         if test_data:
-            FNN.tracking(e, epochs, test_data, task)
+            #FNN.tracking(e, epochs, test_data, task)
+            print("Epoch: ", e, "Accuracy: ", self.evaluate(test_data, task) / len(test_data) * 100)
+            self.accuracy.append(self.evaluate(test_data, task) / len(test_data) * 100)
+            if e == epochs - 1:
+                print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
+                        "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
+        else:
+            print("Epoch {0} complete".format(e))
 
   def tracking(self, epoch, epochs, test_data=None, task=None):
     """
