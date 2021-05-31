@@ -17,6 +17,7 @@
     * In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches. 
     * Then for each mini-batch we apply a single step of gradient descent, which updates the network weights and biases. 
 * fnn.py - Custom Feedforward Neural Network with user-specified activation functions for layers, optimizer and loss function. 
+* [customneuralnet package](https://pypi.org/project/customneuralnet/) is based on fnn.py
 
 ## Linear Classifier          
 Aeroplane Classification using Linear Classifier with two variants
