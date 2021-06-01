@@ -337,7 +337,7 @@ class FNN():
             delta = loss_grad
         else:
             az = activation_function(self.activation_types[-1], zs[-1], False)
-            delta = activation_function(self.activation_types[-1], zs[-1], True) / (az * ( 1 - az ))
+            delta = loss_grad * (activation_function(self.activation_types[-1], zs[-1], True) / (az * ( 1 - az )))
 
     gradient_w[-1] = np.dot(delta, activations[-2].transpose())
     gradient_b[-1] = delta
