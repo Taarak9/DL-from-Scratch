@@ -189,6 +189,9 @@ class FNN():
     self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(self.sizes[:-1], self.sizes[1:])]
     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
     
+    self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
+    self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
+
     self.epoch_list = np.arange(0, epochs)
 
   def get_params(self):
@@ -448,9 +451,13 @@ class FNN():
         gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]
         gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
 
-    update_w = gamma * self.prev_update_w + eta * gradient_w
+    update_w = [o + n for o, n in zip([gamma * puw 
+        for puw in self.prev_update_w], [eta * gw for gw in gradient_w])]
     self.weights = [w - uw for w, uw in zip(self.weights, update_w)]
-    update_b = gamma * self.prev_update_b + eta * gradient_b
+    
+    update_b = [o + n for o, n in zip([gamma * pub for 
+        pub in self.prev_update_b], [eta * gb for gb in gradient_b])]
+    #update_b = gamma * self.prev_update_b + eta * gradient_b
     self.biases = [b - ub for b, ub in zip(self.biases, update_b)]
 
     self.prev_update_w = update_w
@@ -484,8 +491,12 @@ class FNN():
     gradient_b = [np.zeros(b.shape) for b in self.biases]
 
     # w look_ahead partial update
-    update_w = gamma * self.prev_update_w
-    update_b = gamma * self.prev_update_b
+    #update_w = gamma * self.prev_update_w
+    update_w = [o + n for o, n in zip([gamma * puw 
+        for puw in self.prev_update_w], [eta * gw for gw in gradient_w])]
+    #update_b = gamma * self.prev_update_b
+    update_b = [o + n for o, n in zip([gamma * pub 
+        for pub in self.prev_update_b], [eta * gb for gb in gradient_b])]
 
     for x, y in mini_batch:
         delta_gradient_w, delta_gradient_b = self.backprop(x, y, self.weights - update_w, self.biases - update_b)
@@ -493,9 +504,14 @@ class FNN():
         gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]       
 
     # full update
-    update_w = gamma * self.prev_update_w + eta * gradient_w
+    update_w = [o + n for o, n in zip([gamma * puw 
+        for puw in self.prev_update_w], [eta * gw for gw in gradient_w])]
+    #update_w = gamma * self.prev_update_w + eta * gradient_w
     self.weights = [w - uw for w, uw in zip(self.weights, update_w)]
-    update_b = gamma * self.prev_update_b + eta * gradient_b
+    
+    update_b = [o + n for o, n in zip([gamma * pub
+        for pub in self.prev_update_b], [eta * gb for gb in gradient_b])]
+    #update_b = gamma * self.prev_update_b + eta * gradient_b
     self.biases = [b - ub for b, ub in zip(self.biases, update_b)]
     
     self.prev_update_w = update_w
