@@ -23,12 +23,12 @@ Aeroplane Classification using Linear Classifier with two variants
 * Gradient descent; mode = batch learning, loss fn = Cross Entropy
 
 ## Hopfield Neural Network   
-Distorted Character Recognition using Hopfield Neural Network                
-                         
-`To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.`
+Distorted Character Recognition using Hopfield Neural Network    
 
 ### To-do list
 * [ ] Use validation data for parameter selection
 * [ ] Add optimizers: Adam and RMSProp
 * [ ] Write seperate fn for weight initialization methods
 * [ ] Add regularization techniques: L1, L2, dropout
+                         
+#####To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
