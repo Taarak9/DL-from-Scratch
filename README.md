@@ -12,12 +12,10 @@
 * Nesterov accelerated Gradient Descent
 * ...
 
-## Feedforward Neural Network   
-* Backpropagation ( Computes the gradient of Loss function ) Learning using user-specified optimizer  
-    * In each epoch, it starts by randomly shuffling the training data, and then partitions it into mini-batches. 
-    * Then for each mini-batch we apply a single step of gradient descent, which updates the network weights and biases. 
-* fnn.py - Custom Feedforward Neural Network with user-specified activation functions for layers, optimizer and loss function. 
+## Feedforward Neural Network   . 
+* fnn.py - Generic Feedforward Neural Network.
 * [customdl](https://pypi.org/project/customdl/) package
+* [README](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
 
 ## Linear Classifier          
 Aeroplane Classification using Linear Classifier with two variants
@@ -27,7 +25,7 @@ Aeroplane Classification using Linear Classifier with two variants
 ## Hopfield Neural Network   
 Distorted Character Recognition using Hopfield Neural Network                
                          
-#### To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
+`To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.`
 
 ### To-do list
 * [ ] Use validation data for parameter selection
