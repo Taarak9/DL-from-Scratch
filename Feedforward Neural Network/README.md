@@ -13,7 +13,7 @@
    * Then for each mini-batch we apply a single step of gradient descent, which updates the weights and biases.
 * We do the above step until the convergence or for some fixed number of epochs. 
 
-# Validation and Testing
+## Validation and Testing
 * For the epochs we ran, we could save the NN configuration at the epoch where it has the minimum loss :)
 * And with this NN configuration we test our predictions on the test data.
 
