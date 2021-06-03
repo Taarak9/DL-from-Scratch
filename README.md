@@ -10,7 +10,6 @@
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
 * Nesterov accelerated Gradient Descent
-* ...
 
 ## Feedforward Neural Network   . 
 * fnn.py - Generic Feedforward Neural Network.
@@ -31,4 +30,4 @@ Distorted Character Recognition using Hopfield Neural Network
 * [ ] Write seperate fn for weight initialization methods
 * [ ] Add regularization techniques: L1, L2, dropout
                          
-#####To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
+##### To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
