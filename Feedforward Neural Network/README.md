@@ -8,11 +8,10 @@
 * The Loss value quantifies the deviation between our predicted output and the target.
 * Aim of our training algorithm is to minimize this loss by tuning the weights and biases.
 * Optimizer ( Ex: Stochastic mini-batch Gradient Descent ) helps us by giving a mechanism for updating the weights and biases based on the gradients of loss w.r.t weights and biases.
-  * Gradient descent is an optimization algoritm which tells us the direction to roll the ball ( weights and biases ) to reach the minima of the Loss surface.
-* We use backpropagation to computes these gradients.  
-* In each epoch, we randomly shuffling the training data, and then partition it into mini-batches. 
-   * Then for each mini-batch we apply a single step of gradient descent, which updates the weights and biases.
-* We do the above step until the convergence or for some fixed number of epochs. 
+  * Refer [optimizers](https://github.com/Taarak9/Neural-Networks/blob/master/Optimizers/README.md)
+* Until the convergence or for some fixed number of epochs. 
+   * In each epoch, we randomly shuffle the training data, and then partition it into mini-batches. 
+   * Then for each mini-batch we apply a single step of gradient descent, runs backpropagation on a single example to compute the gradients. ( and updates the weights and biases based on the gradients )
 
 ## Validation and Testing
 * For the epochs we ran, we could save the NN configuration at the epoch where it has the minimum loss :)
