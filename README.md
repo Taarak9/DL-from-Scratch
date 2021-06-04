@@ -10,6 +10,7 @@
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
 * Nesterov accelerated Gradient Descent
+* [README](https://github.com/Taarak9/Neural-Networks/blob/master/Optimizers/README.md)
 
 ## Feedforward Neural Network   . 
 * fnn.py - Generic Feedforward Neural Network.
