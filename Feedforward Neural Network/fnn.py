@@ -791,9 +791,9 @@ def activation_function(name, input, derivative=False):
 
   if name == "identity":
       if derivative:
-          return np.ones_like(x)
+          return np.ones_like(input)
       else:
-          return x
+          return input
   elif name == "sigmoid":
       if derivative:
           out = activation_function(name, input)
