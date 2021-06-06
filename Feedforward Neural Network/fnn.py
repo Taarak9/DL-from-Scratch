@@ -162,7 +162,7 @@ class FNN():
     self.epoch_list = list()
     self.accuracy = list()
 
-  def init_params(self, sizes, epochs):
+  def init_params(self, weight_init_type, sizes, epochs):
     """
     Initializes parameters in the NN.
 
@@ -185,16 +185,10 @@ class FNN():
     None
     """
 
-    #self.sizes = sizes
     self.n_layers = len(sizes)
-    # he initialization
-    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) 
-                    for x, y in zip(self.sizes[:-1], self.sizes[1:])]
-    self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-    
+    weight_initializer(self, weight_init_type)
     self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
     self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
-
     self.epoch_list = np.arange(0, epochs)
 
   def get_params(self):
@@ -719,6 +713,12 @@ class FNN():
     None
     """
 
+    print("Weight initialization methods available:")
+    print("random (Random initialization)")
+    print("xavier (Xavier initialization)")
+    print("he (He initialization)")
+    weight_init_type = input("Weight initialization: ")
+    
     epochs = int(input("Number of epochs: "))
 
     print("Optimizer types available:")
@@ -743,7 +743,7 @@ class FNN():
 
     task = input("task (classification/regression): ")
     
-    self.init_params(self.sizes, epochs)
+    self.init_params(weight_init_type, self.sizes, epochs)
 
     self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma,
                    optimizer, mode, shuffle, test_data, task)
@@ -751,54 +751,43 @@ class FNN():
     if test_data:
         self.logging(test_data)
 
-def loss_function(name, y, y_hat, derivative=False):
-  """
-  Computes the loss and its derivative
-
-  Parameters
-  ----------
-  name: str
-      Type of loss function.
-      Options:
-          mse ( Mean squared error )
-          ce ( Cross entropy ) 
-
-  y: list 
-      numpy array ( target )
-  
-  y_hat: list
-      numpy array ( output )
-
-  derivative: bool
-      If True, returns the derivative of loss.
-      Default: False
-
-  Returns
-  -------
-  numpy array
-  """
-  
-  # y - target, y_hat - output
-  # Mean Squared Error
-  if name == "mse":
-      if derivative:
-          return (y_hat - y)
-      else:
-          return np.mean((y - y_hat)**2)
-  # Log-likelihood
-  elif name == "ll":
-      if derivative:
-          return - (1 / y_hat)
-      else:
-          return -1 * np.log(y_hat)
-  # y - target prob distro, y_hat - output prob distro
-  # Cross Entropy
-  elif name == "ce":
-      if derivative:
-          # if activation fn is sigmoid/softmax
-          return (y_hat - y)    
-      else:
-          return np.sum(np.nan_to_num(-y*np.log(y_hat)-(1-y)*np.log(1-y_hat)))
+def weight_initializer(NN, name="random"):
+    """
+    Initializes weights and biases
+    
+    Parameters
+    ----------
+    NN: Neural net object
+        contains sizes, weights, biases
+        
+    name: str
+        Type of weight initialization.
+        Options:
+            random ( Gauss distro mean 0, std 1 )
+            xavier ( n^2 = 1 / n )
+            he ( n^2 = 2 / n )
+    
+    Returns
+    -------
+    NN: Neural net object
+    """
+    
+    if name == "random":
+        NN.weights = [np.random.randn(y, x) 
+                      for x, y in zip(NN.sizes[:-1], NN.sizes[1:])]
+        NN.biases = [np.random.randn(y, 1) for y in NN.sizes[1:]]
+     
+    elif name == "xavier":
+        NN.weights = [np.random.randn(y, x)/np.sqrt(x) 
+                      for x, y in zip(NN.sizes[:-1], NN.sizes[1:])]
+        NN.biases = [np.random.randn(y, 1) for y in NN.sizes[1:]]
+    
+    elif name == "he":
+        NN.weights = [np.random.randn(y, x)*np.sqrt(2/x)
+                      for x, y in zip(NN.sizes[:-1], NN.sizes[1:])]
+        NN.biases = [np.random.randn(y, 1) for y in NN.sizes[1:]]
+        
+    return NN
 
 def activation_function(name, input, derivative=False):
   """
@@ -855,3 +844,52 @@ def activation_function(name, input, derivative=False):
           return (input > 0) * 1
       else:
           return np.maximum(0, input)
+      
+def loss_function(name, y, y_hat, derivative=False):
+  """
+  Computes the loss and its derivative
+
+  Parameters
+  ----------
+  name: str
+      Type of loss function.
+      Options:
+          mse ( Mean squared error )
+          ce ( Cross entropy ) 
+
+  y: list 
+      numpy array ( target )
+  
+  y_hat: list
+      numpy array ( output )
+
+  derivative: bool
+      If True, returns the derivative of loss.
+      Default: False
+
+  Returns
+  -------
+  numpy array
+  """
+  
+  # y - target, y_hat - output
+  # Mean Squared Error
+  if name == "mse":
+      if derivative:
+          return (y_hat - y)
+      else:
+          return np.mean((y - y_hat)**2)
+  # Log-likelihood
+  elif name == "ll":
+      if derivative:
+          return - (1 / y_hat)
+      else:
+          return -1 * np.log(y_hat)
+  # y - target prob distro, y_hat - output prob distro
+  # Cross Entropy
+  elif name == "ce":
+      if derivative:
+          # if activation fn is sigmoid/softmax
+          return (y_hat - y)    
+      else:
+          return np.sum(np.nan_to_num(-y*np.log(y_hat)-(1-y)*np.log(1-y_hat)))
