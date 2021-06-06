@@ -733,20 +733,20 @@ def loss_function(name, y, y_hat, derivative=False):
           ce ( Cross entropy ) 
 
   y: list 
-      List of numpy arrays ( target )
+      numpy array ( target )
   
   y_hat: list
-      List of numpy arrays ( output )
+      numpy array ( output )
 
   derivative: bool
-      If true, returns the derivative of loss.
+      If True, returns the derivative of loss.
       Default: False
 
   Returns
   -------
-  List
+  numpy array
   """
-
+  
   # y - target, y_hat - output
   # Mean Squared Error
   if name == "mse":
@@ -754,6 +754,12 @@ def loss_function(name, y, y_hat, derivative=False):
           return (y_hat - y)
       else:
           return np.mean((y - y_hat)**2)
+  # Log-likelihood
+  elif name == "ll":
+      if derivative:
+          return - (1 / y_hat)
+      else:
+          return -1 * np.log(y_hat)
   # y - target prob distro, y_hat - output prob distro
   # Cross Entropy
   elif name == "ce":
@@ -778,7 +784,7 @@ def activation_function(name, input, derivative=False):
             tanh
             relu  
 
-  input: int/float/list
+  input: int/float/list/array
 
   derivative: bool
       If true, returns the derivative of loss.
@@ -786,7 +792,7 @@ def activation_function(name, input, derivative=False):
 
   Returns
   -------
-  None
+  Numpy array or list
   """
 
   if name == "identity":
@@ -818,4 +824,3 @@ def activation_function(name, input, derivative=False):
           return (input > 0) * 1
       else:
           return np.maximum(0, input)
-
