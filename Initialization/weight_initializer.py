@@ -18,7 +18,7 @@ def weight_initializer(NN, name="random"):
     
     Returns
     -------
-    NN object
+    NN: Neural net object
     """
     
     if name == "random":
@@ -32,7 +32,7 @@ def weight_initializer(NN, name="random"):
         NN.biases = [np.random.randn(y, 1) for y in NN.sizes[1:]]
     
     elif name == "he":
-        NN.weights = [np.random.randn(y, x)*2/np.sqrt(x)
+        NN.weights = [np.random.randn(y, x)*np.sqrt(2/x)
                       for x, y in zip(NN.sizes[:-1], NN.sizes[1:])]
         NN.biases = [np.random.randn(y, 1) for y in NN.sizes[1:]]
         
