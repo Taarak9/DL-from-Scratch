@@ -111,7 +111,9 @@ class FNN():
       applying Nesterov accerelated Gradient Descent (NAG)
       on the mini batch.
 
-  Optimizer(training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+  Optimizer(training_data, epochs, mini_batch_size, eta, 
+            gamma=None, optimizer="GD", mode="batch", 
+            shuffle=True, test_data=None, task=None):
       Runs the optimizer on the training data
       for given number of epochs.
 
@@ -125,7 +127,7 @@ class FNN():
       Given test data it plots 
       Epoch vs Error graph.
 
-  compile(training_data, epochs, mini_batch_size, eta, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+  compile(training_data, test_data=None):
       Compiles the NN i.e
       Initializes the parameters
       and runs the optimizer.
@@ -186,7 +188,8 @@ class FNN():
     #self.sizes = sizes
     self.n_layers = len(sizes)
     # he initialization
-    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+    self.weights = [np.random.randn(y, x) * np.sqrt(2 / x) 
+                    for x, y in zip(self.sizes[:-1], self.sizes[1:])]
     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
     
     self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
@@ -258,7 +261,7 @@ class FNN():
 
   def evaluate(self, test_data, task): 
     """
-    Return the number of test inputs for which the NN outputs the correct result.
+    Return the no of test inputs for which the NN outputs the correct result.
    
     Parameters
     ----------
@@ -277,7 +280,8 @@ class FNN():
     """
 
     if task == "classification":
-        test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+        test_results = [(np.argmax(self.feedforward(x)), y) 
+                        for (x, y) in test_data]
     elif task == "regression":
         test_results = [(self.feedforward(x), y) for (x, y) in test_data]
     else:
@@ -333,22 +337,27 @@ class FNN():
     loss_grad = loss_function(self.loss_fn, y, activations[-1], True)
     # delta: errors of the output layer
     if (self.loss_fn == "mse"):
-        delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
-    elif (self.loss_fn == "ce"):
-        # if sigmoid or softmax: derivative is out*(1-out): num and den cancel each other
-        if (self.activation_types[-1] == "sigmoid" or self.activation_types[-1] == "softmax"):
-            delta = loss_grad
-        else:
-            az = activation_function(self.activation_types[-1], zs[-1], False)
-            delta = loss_grad * (activation_function(self.activation_types[-1], zs[-1], True) / (az * ( 1 - az )))
+        delta = loss_grad * activation_function(self.activation_types[-1], 
+                                                zs[-1], True)
     elif (self.loss_fn == "ll"):
-        # if sigmoid or softmax: derivative is out*(1-out): num and den cancel each other
-        if (self.activation_types[-1] == "sigmoid" or self.activation_types[-1] == "softmax"):
+        # if sigmoid or softmax: derivative is out*(1-out): num and den cancels
+        if (self.activation_types[-1] == "sigmoid" or 
+            self.activation_types[-1] == "softmax"):
             delta = activations[-1]
         else:
             az = activation_function(self.activation_types[-1], zs[-1], False)
-            delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
-    
+            delta = loss_grad * activation_function(self.activation_types[-1],
+                                                    zs[-1], True)
+    elif (self.loss_fn == "ce"):
+        # if sigmoid or softmax: derivative is out*(1-out): num and den cancels
+        if (self.activation_types[-1] == "sigmoid" or
+            self.activation_types[-1] == "softmax"):
+            delta = loss_grad
+        else:
+            az = activation_function(self.activation_types[-1], zs[-1], False)
+            delta = loss_grad * (activation_function(
+                self.activation_types[-1], zs[-1], True) / (az * ( 1 - az )))
+
     gradient_w[-1] = np.dot(delta, activations[-2].transpose())
     gradient_b[-1] = delta
     # backpropagate the error
@@ -418,8 +427,10 @@ class FNN():
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
         delta_gradient_w, delta_gradient_b = self.backprop(x, y)
-        gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]
-        gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
+        gradient_b = [gb + dgb 
+                      for gb, dgb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [gw + dgw 
+                      for gw, dgw in zip(gradient_w, delta_gradient_w)]
 
     self.weights = [w - (eta / len(mini_batch)) * gw 
             for w, gw in zip(self.weights, gradient_w)]
@@ -455,8 +466,10 @@ class FNN():
     gradient_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch:
         delta_gradient_w, delta_gradient_b = self.backprop(x, y)
-        gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]
-        gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
+        gradient_b = [gb + dgb 
+                      for gb, dgb in zip(gradient_b, delta_gradient_b)]
+        gradient_w = [gw + dgw 
+                      for gw, dgw in zip(gradient_w, delta_gradient_w)]
 
     update_w = [o + n for o, n in zip([gamma * puw 
         for puw in self.prev_update_w], [eta * gw for gw in gradient_w])]
@@ -506,7 +519,8 @@ class FNN():
         for pub in self.prev_update_b], [eta * gb for gb in gradient_b])]
 
     for x, y in mini_batch:
-        delta_gradient_w, delta_gradient_b = self.backprop(x, y, self.weights - update_w, self.biases - update_b)
+        delta_gradient_w, delta_gradient_b = self.backprop(
+            x, y, self.weights - update_w, self.biases - update_b)
         gradient_w = [gw + dgw for gw, dgw in zip(gradient_w, delta_gradient_w)]
         gradient_b = [gb + dgb for gb, dgb in zip(gradient_b, delta_gradient_b)]       
 
@@ -525,7 +539,9 @@ class FNN():
     self.prev_update_b = update_b
 
 
-  def Optimizer(self, training_data, epochs, mini_batch_size=None, eta=1, gamma=None, optimizer="GD", mode="batch", shuffle=True, test_data=None, task=None):
+  def Optimizer(self, training_data, epochs, mini_batch_size=None, eta=1,
+                gamma=None, optimizer="GD", mode="batch", shuffle=True,
+                test_data=None, task=None):
     """
     Runs the optimizer on the training data for given number of epochs.
     
@@ -593,7 +609,8 @@ class FNN():
         if shuffle:
             random.shuffle(training_data)
         
-        mini_batches = [training_data[k:k+batch_size] for k in range(0, n, batch_size)]
+        mini_batches = [training_data[k:k+batch_size]
+                        for k in range(0, n, batch_size)]
         
         for mini_batch in mini_batches:
             if optimizer == "GD":
@@ -605,10 +622,13 @@ class FNN():
         
         if test_data:
             #FNN.tracking(e, epochs, test_data, task)
-            print("Epoch: ", e, "Accuracy: ", self.evaluate(test_data, task) / len(test_data) * 100)
-            self.accuracy.append(self.evaluate(test_data, task) / len(test_data) * 100)
+            print("Epoch: ", e, "Accuracy: ",
+                  self.evaluate(test_data, task) / len(test_data) * 100)
+            self.accuracy.append(self.evaluate(test_data, task) /
+                                 len(test_data) * 100)
             if e == epochs - 1:
-                print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
+                print("Max accuracy achieved: ", 
+                      np.around(np.max(self.accuracy), decimals=2), 
                         "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
         else:
             print("Epoch {0} complete".format(e))
@@ -643,10 +663,13 @@ class FNN():
     """
 
     if test_data:
-        print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task) / len(test_data) * 100)
-        self.accuracy.append(self.evaluate(test_data, task) / len(test_data) * 100)
+        print("Epoch: ", epoch, "Accuracy: ", self.evaluate(test_data, task)
+              / len(test_data) * 100)
+        self.accuracy.append(self.evaluate(test_data, task) /
+                             len(test_data) * 100)
         if epoch == epochs - 1:
-              print("Max accuracy achieved: ", np.around(np.max(self.accuracy), decimals=2), 
+              print("Max accuracy achieved: ", np.around(np.max(self.accuracy),
+                                                         decimals=2), 
                     "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
     else:
         print("Epoch {0} complete".format(epoch))
@@ -722,7 +745,8 @@ class FNN():
     
     self.init_params(self.sizes, epochs)
 
-    self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma, optimizer, mode, shuffle, test_data, task)
+    self.Optimizer(training_data, epochs, mini_batch_size, eta, gamma,
+                   optimizer, mode, shuffle, test_data, task)
       
     if test_data:
         self.logging(test_data)
@@ -774,7 +798,7 @@ def loss_function(name, y, y_hat, derivative=False):
           # if activation fn is sigmoid/softmax
           return (y_hat - y)    
       else:
-          return -np.sum(y * np.log(y_hat))
+          return np.sum(np.nan_to_num(-y*np.log(y_hat)-(1-y)*np.log(1-y_hat)))
 
 def activation_function(name, input, derivative=False):
   """
