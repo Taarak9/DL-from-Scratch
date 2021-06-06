@@ -47,4 +47,4 @@ def loss_function(name, y, y_hat, derivative=False):
           # if activation fn is sigmoid/softmax
           return (y_hat - y)    
       else:
-          return -np.sum(y * np.log(y_hat))
+          return np.sum(np.nan_to_num(-y*np.log(y_hat)-(1-y)*np.log(1-y_hat)))
