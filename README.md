@@ -4,18 +4,18 @@
  * Activation functions and their derivatives
      * Identity, Sigmoid, Softmax, Tanh, ReLU
  * Loss functions and their derivatives
-     * Mean Squared Error, Cross Entropy   
+     * Mean Squared Error, Log-likelihood, Cross Entropy   
  
 ## Optimizers
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
 * Nesterov accelerated Gradient Descent
-* [README](https://github.com/Taarak9/Neural-Networks/blob/master/Optimizers/README.md)
+* [ReadMe](https://github.com/Taarak9/Neural-Networks/blob/master/Optimizers/README.md)
 
 ## Feedforward Neural Network   . 
 * fnn.py - Generic Feedforward Neural Network.
 * [customdl](https://pypi.org/project/customdl/) package
-* [README](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
+* [ReadMe](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
 
 ## Linear Classifier          
 Aeroplane Classification using Linear Classifier with two variants
