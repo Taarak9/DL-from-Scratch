@@ -1,6 +1,31 @@
 import numpy as np
 
 def activation_function(name, input, derivative=False):
+  """
+  Computes the activation function and its derivative.
+
+  Parameters
+  ----------
+  name: str
+      Activation function name.
+        Options:
+            identity
+            sigmoid
+            softmax
+            tanh
+            relu  
+
+  input: int/float/list/array
+
+  derivative: bool
+      If true, returns the derivative of loss.
+      Default: False
+
+  Returns
+  -------
+  Numpy array or list
+  """
+
   if name == "identity":
       if derivative:
           return np.ones_like(input)
