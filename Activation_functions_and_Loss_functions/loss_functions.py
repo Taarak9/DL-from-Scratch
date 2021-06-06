@@ -1,7 +1,32 @@
 import numpy as np
 
-# y and y_hat are numpy arrays
 def loss_function(name, y, y_hat, derivative=False):
+  """
+  Computes the loss and its derivative
+
+  Parameters
+  ----------
+  name: str
+      Type of loss function.
+      Options:
+          mse ( Mean squared error )
+          ce ( Cross entropy ) 
+
+  y: list 
+      numpy array ( target )
+  
+  y_hat: list
+      numpy array ( output )
+
+  derivative: bool
+      If True, returns the derivative of loss.
+      Default: False
+
+  Returns
+  -------
+  numpy array
+  """
+  
   # y - target, y_hat - output
   # Mean Squared Error
   if name == "mse":
@@ -9,6 +34,12 @@ def loss_function(name, y, y_hat, derivative=False):
           return (y_hat - y)
       else:
           return np.mean((y - y_hat)**2)
+  # Log-likelihood
+  elif name == "ll":
+      if derivative:
+          return - (1 / y_hat)
+      else:
+          return -1 * np.log(y_hat)
   # y - target prob distro, y_hat - output prob distro
   # Cross Entropy
   elif name == "ce":
