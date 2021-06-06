@@ -335,13 +335,20 @@ class FNN():
     if (self.loss_fn == "mse"):
         delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
     elif (self.loss_fn == "ce"):
-        # if sigmoid or softmax: derivative is out*(1-out) and they cancel each other
+        # if sigmoid or softmax: derivative is out*(1-out): num and den cancel each other
         if (self.activation_types[-1] == "sigmoid" or self.activation_types[-1] == "softmax"):
             delta = loss_grad
         else:
             az = activation_function(self.activation_types[-1], zs[-1], False)
             delta = loss_grad * (activation_function(self.activation_types[-1], zs[-1], True) / (az * ( 1 - az )))
-
+    elif (self.loss_fn == "ll"):
+        # if sigmoid or softmax: derivative is out*(1-out): num and den cancel each other
+        if (self.activation_types[-1] == "sigmoid" or self.activation_types[-1] == "softmax"):
+            delta = activations[-1]
+        else:
+            az = activation_function(self.activation_types[-1], zs[-1], False)
+            delta = loss_grad * activation_function(self.activation_types[-1], zs[-1], True)
+    
     gradient_w[-1] = np.dot(delta, activations[-2].transpose())
     gradient_b[-1] = delta
     # backpropagate the error
