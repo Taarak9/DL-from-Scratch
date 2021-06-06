@@ -27,8 +27,10 @@ Distorted Character Recognition using Hopfield Neural Network
 
 ### To-do list
 * [ ] Use validation data for parameter selection
-* [ ] Add optimizers: Adam and RMSProp
+* [ ] Load and export model
 * [ ] Write seperate fn for weight initialization methods
-* [ ] Add regularization techniques: L1, L2, dropout
+* [ ] Regularization techniques: L1, L2, dropout
+* [ ] Add optimizers: Adam, RMSProp
+* [ ] RBF NN
                          
 ##### To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
