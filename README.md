@@ -1,12 +1,32 @@
 # Neural-Networks
 
-## Activation functions and Loss functions
- * Activation functions and their derivatives
-     * Identity, Sigmoid, Softmax, Tanh, ReLU
- * Loss functions and their derivatives
-     * Mean Squared Error, Log-likelihood, Cross Entropy   
+## Linear Classifier          
+Aeroplane Classification using Linear Classifier with two variants
+* Perceptron learning rule; mode = online learning, loss fn =  MSE
+* Gradient descent; mode = batch learning, loss fn = Cross Entropy
+
+## Hopfield Neural Network   
+Distorted Character Recognition using Hopfield Neural Network  
+
+## Initialization
+* Weight initialization methods
+    * Random initialization
+    * Xavier initialization
+    * He initialization
  
-## Optimizers
+## Activation functions and Loss functions
+* Activation functions and their derivatives
+    * Identity
+    * Sigmoid
+    * Softmax
+    * Tanh
+    * ReLU
+* Loss functions and their derivatives
+    * Mean Squared Error
+    * Log-likelihood
+    * Cross Entropy   
+ 
+## Optimizers  
 * Stochastic mini-batch Gradient Descent
 * Momentum based Gradient Descent
 * Nesterov accelerated Gradient Descent
@@ -17,18 +37,10 @@
 * [customdl](https://pypi.org/project/customdl/) package
 * [ReadMe](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
 
-## Linear Classifier          
-Aeroplane Classification using Linear Classifier with two variants
-* Perceptron learning rule; mode = online learning, loss fn =  MSE
-* Gradient descent; mode = batch learning, loss fn = Cross Entropy
-
-## Hopfield Neural Network   
-Distorted Character Recognition using Hopfield Neural Network    
-
 ### To-do list
-* [ ] Use validation data for parameter selection
-* [ ] Load and export model
-* [ ] Write seperate fn for weight initialization methods
+* [ ] Save and Load model
+* [ ] Use validation data for hyperparameter tuning
+* [ ] Plots for monitoring loss and accuracy over epochs
 * [ ] Regularization techniques: L1, L2, dropout
 * [ ] Add optimizers: Adam, RMSProp
 * [ ] RBF NN
