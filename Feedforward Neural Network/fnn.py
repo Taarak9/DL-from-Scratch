@@ -3,38 +3,12 @@ import random
 import json
 from matplotlib import pyplot as plt
 
-class Dense_Layer:
-    """Dense Layer Class. """
-    def __init__(self, n_nodes, activation_type):
-        """
-        Creates the Dense layer.
-          
-        Parameters
-        ----------
-        n_nodes: int
-            Number of nodes in the layer.
-        activation_type: str
-            Activation function used in the layer.
-            Options:
-                identity,
-                sigmoid,
-                softmax,
-                tanh,
-                relu
-        """
-          
-        self.n_nodes = n_nodes
-        self.activation_type = activation_type
-
 class FNN():
     """
     Feedforward Neural network Class.
-    
+     
     Attributes
-    ----------
-    NN: list
-        List of all the layers in the NN.
-    
+    ----------   
     sizes: list
         List of number of nodes in the respective layers of the NN.
     
@@ -71,60 +45,63 @@ class FNN():
     
     accuracy: list
         List to store the accuracy at each epoch.
-    
-    Methods
-    -------
-    init_params(sizes, epochs):
-        Initializes parameters in the NN.
-    
-    get_params():
-        Return weights and biases of the NN.
-    
-    add_layer(n_nodes, activation_type):
-        Adds a layer to the NN.
-    
-    feedforward(a):
-        Return the output of NN if input is a. 
-    
-    evaluate(test_data, task):      
-        Return the number of test inputs for which the
-        NN outputs the correct result.
-    
-    backprop(x, y, weights=None, biases=None):
-        Returns the gradients of weights and biases
-        for a given example.
-    
-    get_batch_size(training_data, mode, mini_batch_size):
-        Returns the batch size given mode.
-    
+     
+     Methods
+     -------
+     init_params(sizes, epochs):
+         Initializes parameters in the NN.
+     
+     get_params():
+         Return weights and biases of the NN.
+     
+     add_layer(n_nodes, activation_type):
+         Adds a layer to the NN.
+     
+     feedforward(a):
+         Return the output of NN if input is a. 
+     
+     evaluate(test_data, task):      
+         Return the number of test inputs for which the
+         NN outputs the correct result.
+     
+     backprop(x, y, weights=None, biases=None):
+         Returns the gradients of weights and biases
+         for a given example.
+     
+     get_batch_size(training_data, mode, mini_batch_size):
+         Returns the batch size given mode.
+     
     update_GD(mini_batch, eta):
         Updates weights and biases after 
         applying Gradient Descent (GD)
         on the mini batch.
-    
-    update_MGD(mini_batch, gamma, eta):
-        Updates weights and biases after 
-        applying Momentum based Gradient Descent (MGD)
-        on the mini batch.
-    
-    update_NAG(mini_batch, eta, gamma):
-        Updates weights and biases after 
-        applying Nesterov accerelated Gradient Descent (NAG)
-        on the mini batch.
-    
-    Optimizer(training_data, epochs, mini_batch_size, eta, 
-              gamma=None, optimizer="GD", mode="batch", 
-              shuffle=True, test_data=None, task=None):
-        Runs the optimizer on the training data for given number of epochs.
-    
-    compile(training_data, test_data=None):
-        Compiles the NN i.e Initializes the parameters and runs the optimizer.
-        
-   logging(test_data=None):
+     
+     update_MGD(mini_batch, gamma, eta):
+         Updates weights and biases after 
+         applying Momentum based Gradient Descent (MGD)
+         on the mini batch.
+     
+     update_NAG(mini_batch, eta, gamma):
+         Updates weights and biases after 
+         applying Nesterov accerelated Gradient Descent (NAG)
+         on the mini batch.
+     
+     Optimizer(training_data, epochs, mini_batch_size, eta, 
+       gamma=None, optimizer="GD", mode="batch", 
+       shuffle=True, test_data=None, task=None):
+         Runs the optimizer on the training data for given number of epochs.
+     
+     compile(training_data, test_data=None):
+         Compiles the NN i.e Initializes the parameters and runs the optimizer.
+     
+    logging(test_data=None):
         Given test data, it plots Epoch vs Error graph.
-        
+     
     save(self, filename):
         Saves the NN to the file.
+     
+    load(self, filename):
+        laads the NN from the file.
     """
 
     def __init__(self, n_inputs, loss_fn):
@@ -143,7 +120,6 @@ class FNN():
               ce ( Cross entropy )
         """
         
-        self.NN = list()
         self.sizes = [n_inputs]
         self.n_layers = 0
         self.n_inputs = n_inputs
@@ -159,12 +135,6 @@ class FNN():
     def init_params(self, sizes, epochs, weight_init_type=None):
         """
         Initializes parameters in the NN.
-        
-        The weights and biases for the NN
-        are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.
-        
-        For weights he initialization is also used.
         
         Parameters
         ----------
@@ -222,10 +192,7 @@ class FNN():
         -------
         None
         """
-        
-        layer = Dense_Layer(n_nodes, activation_type)
-        
-        self.NN.append(layer)
+                
         self.activation_types.append(activation_type)
         self.sizes.append(n_nodes)
         self.n_layers += 1
@@ -658,7 +625,7 @@ class FNN():
         if pretrain == "Yes":
             self.init_params(self.sizes, epochs)
             filename = input("Enter the filename: ")
-            load(self, filename)
+            self.load(filename)
         else:
             print("Weight initialization methods available:")
             print("random (Random initialization)")
@@ -749,31 +716,29 @@ class FNN():
         json.dump(config, fhand)
         fhand.close()
 
-def load(NN, filename):
-    """
-    Load a neural network from the file ``filename``.
-
-    Parameters
-    ----------
-    NN: Neural network object
-    filename: str    
+    def load(self, filename):
+        """
+        Load a neural network from the file ``filename``.
     
-    Returns
-    -------
-    NN: Neural network object
-
-    """
-    fhand = open(filename, "r")
-    config = json.load(fhand)
-    fhand.close()
-   
-    NN.sizes = config["sizes"]
-    NN.weights = [np.array(w) for w in config["weights"]]
-    NN.biases = [np.array(b) for b in config["biases"]]
-    NN.activation_types = config["activation_fns"]
-    NN.loss_fn = config["loss"]
+        Parameters
+        ----------
+        NN: Neural network object
+        filename: str    
+        
+        Returns
+        -------
+        NN: Neural network object
     
-    return NN
+        """
+        fhand = open(filename, "r")
+        config = json.load(fhand)
+        fhand.close()
+       
+        self.sizes = config["sizes"]
+        self.weights = [np.array(w) for w in config["weights"]]
+        self.biases = [np.array(b) for b in config["biases"]]
+        self.activation_types = config["activation_fns"]
+        self.loss_fn = config["loss"]
 
 def weight_initializer(NN, name="random"):
     """
