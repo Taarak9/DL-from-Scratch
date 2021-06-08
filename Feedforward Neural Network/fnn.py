@@ -2,7 +2,7 @@ import numpy as np
 import random
 import json
 from matplotlib import pyplot as plt
-from base import weight_initializer, activation_function, loss_function
+from base import activation_function, loss_function
 
 class FNN():
     """
@@ -49,6 +49,9 @@ class FNN():
      
      Methods
      -------
+     weight_initializer(name="random"):
+         Initializes weights and biases.
+
      init_params(sizes, epochs):
          Initializes parameters in the NN.
      
@@ -132,6 +135,40 @@ class FNN():
         self.loss_fn = loss_fn
         self.epoch_list = list()
         self.accuracy = list()
+        
+    def weight_initializer(self, name="random"):
+        """
+        Initializes weights and biases
+        
+        Parameters
+        ----------
+            
+        name: str
+            Type of weight initialization.
+            Options:
+                random ( Gauss distro mean 0, std 1 )
+                xavier ( n^2 = 1 / n )
+                he ( n^2 = 2 / n )
+        
+        Returns
+        -------
+        None
+        """
+        
+        if name == "random":
+            self.weights = [np.random.randn(y, x) 
+                          for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+            self.biases = [np.random.randn(y, 1) for y in self.sizes[1:]]
+         
+        elif name == "xavier":
+            self.weights = [np.random.randn(y, x)/np.sqrt(x) 
+                          for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+            self.biases = [np.random.randn(y, 1) for y in self.sizes[1:]]
+        
+        elif name == "he":
+            self.weights = [np.random.randn(y, x)*np.sqrt(2/x)
+                          for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+            self.biases = [np.random.randn(y, 1) for y in self.sizes[1:]]
 
     def init_params(self, sizes, epochs, weight_init_type=None):
         """
@@ -155,7 +192,7 @@ class FNN():
         """
         
         self.n_layers = len(sizes)
-        if weight_init_type: weight_initializer(self, weight_init_type)
+        if weight_init_type: self.weight_initializer(weight_init_type)
         self.prev_update_w = [np.zeros(w.shape) for w in self.weights]
         self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
         self.epoch_list = np.arange(0, epochs)
