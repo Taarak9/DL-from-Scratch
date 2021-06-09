@@ -1,6 +1,6 @@
 import numpy as np
 
-def activation_function(name, input, derivative=False):
+def activation_function(name, x, derivative=False):
     """
     Computes the activation function and its derivative.
     
@@ -15,7 +15,8 @@ def activation_function(name, input, derivative=False):
               tanh
               relu  
     
-    input: int/float/list/array
+    x: int/float/list/array
+        Input.
     
     derivative: bool
         If true, returns the derivative of loss.
@@ -28,33 +29,37 @@ def activation_function(name, input, derivative=False):
     
     if name == "identity":
         if derivative:
-            return np.ones_like(input)
+            return np.ones_like(x)
         else:
-            return input
+            return x
     elif name == "sigmoid":
         if derivative:
-            out = activation_function(name, input)
+            out = activation_function(name, x)
             return out * ( 1 - out )
         else:
-            return 1 / (1 + np.exp(-input))
+            # Prevents overflow
+            x_clipped = np.clip(x, -500, 500)
+            return 1 / (1 + np.exp(-x_clipped))
     elif name == "softmax":
         if derivative:
-            out = activation_function(name, input)
+            out = activation_function(name, x)
             return out * (1 - out)
         else:
-            e_x = np.exp(input - np.max(input))
+            # Prevents overflow
+            x_clipped = np.clip(x, -500, 500)
+            e_x = np.exp(x_clipped - np.max(x_clipped))
             return e_x / np.sum(e_x, axis=1, keepdims=True)
     elif name == "tanh":
         if derivative:
-            out = activation_function(name, input)
+            out = activation_function(name, x)
             return 1 - np.square(out)
         else:
-            return 2 / (1 + np.exp(-2*input)) - 1
+            return 2 / (1 + np.exp(-2*x)) - 1
     elif name == "relu":
         if derivative:
-            return (input > 0) * 1
+            return (x > 0) * 1
         else:
-            return np.maximum(0, input)
+            return np.maximum(0, x)
       
 def loss_function(name, y, y_hat, derivative=False):
     """
@@ -103,4 +108,7 @@ def loss_function(name, y, y_hat, derivative=False):
             # if activation fn is sigmoid/softmax
             return (y_hat - y)    
         else:
-            return np.sum(np.nan_to_num(-y*np.log(y_hat)-(1-y)*np.log(1-y_hat)))
+            # prevents overflow
+            y_clipped = np.clip(y_hat, 1e-8, None)
+            return np.sum(np.nan_to_num(-y*np.log(y_clipped)-(1-y)*
+                                        np.log(1-y_clipped)))
