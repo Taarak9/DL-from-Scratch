@@ -38,8 +38,10 @@ Distorted Character Recognition using Hopfield Neural Network
 * [ReadMe](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
 
 ### To-do list
-* [ ] Use validation data for hyperparameter tuning
+* [ ] Use validation data for hyper parameter tuning
+   * hyper paramters: epochs, mini-batch size, learning rate, momentum  
 * [ ] Plots for monitoring loss and accuracy over epochs
+   * With data as arg ( options: training_data, validation_data, test_data )
 * [ ] Regularization techniques: L1, L2, dropout
 * [ ] Add optimizers: Adam, RMSProp
 * [ ] RBF NN
