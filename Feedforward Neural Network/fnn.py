@@ -2,7 +2,7 @@ import numpy as np
 import random
 import json
 from matplotlib import pyplot as plt
-from base import activation_function, loss_function
+from .base import activation_function, loss_function
 
 class FNN():
     """
