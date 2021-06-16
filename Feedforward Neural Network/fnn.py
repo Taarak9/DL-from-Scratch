@@ -65,9 +65,8 @@ class FNN():
     feedforward(a):
         Return the output of NN if input is a. 
     
-    evaluate(test_data, task):      
-        Return the number of test inputs for which the
-        NN outputs the correct result.
+    accuracy(data, task):      
+        Return the accuracy of NN on the given data.
     
     backprop(x, y, weights=None, biases=None):
         Returns the gradients of weights and biases
@@ -94,20 +93,19 @@ class FNN():
     compile(training_data, test_data=None):
         Compiles the NN.
         
-    fit(training_data, epochs, batch_size, eta, 
-      gamma=None, optimizer="GD", mode="batch", 
-      shuffle=True, test_data=None, task=None):
+    fit(training_data, validation_data=None):
         Runs the optimizer on the training data for given number of epochs.
         
-    predict
+    predict(new_data):
+        Gives NN predictions on the new data
      
     logging(test_data=None):
         Given test data, it plots Epoch vs Error graph.
      
-    save(self, filename):
+    save(filename):
         Saves the NN to the file.
      
-    load(self, filename):
+    load(filename):
         laads the NN from the file.
     """
 
@@ -138,7 +136,6 @@ class FNN():
         self.loss_fn = loss_fn
         self.config = dict()
         self.epoch_list = list()
-        self.accuracy = list()
         
     def weight_initializer(self, name="random"):
         """
@@ -260,34 +257,28 @@ class FNN():
           l += 1
         return a
 
-    def evaluate(self, test_data, task): 
+    def accuracy(self, data): 
         """
         Return the no of test inputs for which the NN outputs the correct result.
            
         Parameters
         ----------
-        test_data: list
+        data: list
             List of tuples (x, y)
-        
-        type: str
-            Type of task.
-            Options:
-                classification
-                regression
         
         Returns
         -------
         Returns int 
         """
         
-        if task == "classification":
-            test_results = [(np.argmax(self.feedforward(x)), y) 
-                            for (x, y) in test_data]
-        elif task == "regression":
-            test_results = [(self.feedforward(x), y) for (x, y) in test_data]
+        if self.config["task"] == "classification":
+            results = [(np.argmax(self.feedforward(x)), y) 
+                            for (x, y) in data]
+        elif self.config["task"] == "regression":
+            results = [(self.feedforward(x), y) for (x, y) in data]
         else:
             return -1
-        return sum(int(x == y) for (x, y) in test_results)
+        return sum(int(x == y) for (x, y) in results) / len(data) * 100
     
     def backprop(self, x, y, weights=None, biases=None):
         """
@@ -609,7 +600,7 @@ class FNN():
             pass
         '''
         
-    def fit(self, training_data, test_data=None):
+    def fit(self, training_data, validation_data=None):
         """
         Runs the optimizer on the training data for given number of epochs.
         
@@ -691,15 +682,15 @@ class FNN():
                     self.update_MGD(mini_batch, self.conifg["eta"],
                                     self.config["gamma"])
             
-            if test_data:
-                print("Epoch: ", e, "Accuracy: ", self.evaluate(
-                    test_data, self.config["task"]) / len(test_data) * 100)
-                self.accuracy.append(self.evaluate(
-                    test_data, self.config["task"]) / len(test_data) * 100)
+            best_accuracy = 0
+            if validation_data:
+                acc =  self.accuracy(validation_data)
+                if acc > best_accuracy:
+                    best_accuracy = acc
+                print("Epoch: ", e, "Accuracy: ", acc)
                 if e == self.config["epochs"] - 1:
-                    print("Max accuracy achieved: ", 
-                          np.around(np.max(self.accuracy), decimals=2), 
-                            "at epoch ", self.epoch_list[np.argmax(self.accuracy)])
+                    print("Max accuracy achieved on validation data: ",
+                          best_accuracy)
             else:
                 print("Epoch {0} complete".format(e))
                 
