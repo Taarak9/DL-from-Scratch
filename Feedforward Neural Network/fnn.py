@@ -665,6 +665,9 @@ class FNN():
             self.prev_update_b = [np.zeros(b.shape) for b in self.biases]
         
         print("---------------Status---------------")
+        best_accuracy = 0
+        best_weights = list()
+        best_biases = list()
         for e in range(self.config["epochs"]):
             if self.config["shuffle"]:
                 random.shuffle(training_data)
@@ -682,17 +685,27 @@ class FNN():
                     self.update_MGD(mini_batch, self.conifg["eta"],
                                     self.config["gamma"])
             
-            best_accuracy = 0
             if validation_data:
                 acc =  self.accuracy(validation_data)
                 if acc > best_accuracy:
                     best_accuracy = acc
+                    best_weights = self.weights
+                    best_biases = self.biases
                 print("Epoch: ", e, "Accuracy: ", acc)
                 if e == self.config["epochs"] - 1:
                     print("Max accuracy achieved on validation data: ",
                           best_accuracy)
+                    self.weights = best_weights
+                    self.biases = best_biases
             else:
                 print("Epoch {0} complete".format(e))
+
+        save_option = input("Save Neural Network(Yes/No): ")
+        if save_option == "Yes":
+            filename = input("Enter the filename: ")
+            self.save(filename)
+        else:
+            pass
                 
     def predict(self, new_data):
         return self.feedforward(x for x in new_data)     
