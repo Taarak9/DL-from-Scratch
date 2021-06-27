@@ -37,6 +37,9 @@ Distorted Character Recognition using Hopfield Neural Network
 * [customdl](https://pypi.org/project/customdl/) package
 * [ReadMe](https://github.com/Taarak9/Neural-Networks/tree/master/Feedforward%20Neural%20Network)
 
+## Convolutional Neural Network
+* ...
+
 ### To-do list
 * [ ] Use validation data for hyper parameter tuning
    * hyper paramters: epochs, mini-batch size, learning rate, momentum  
@@ -44,6 +47,7 @@ Distorted Character Recognition using Hopfield Neural Network
    * With data as arg ( options: training_data, validation_data, test_data )
 * [ ] Regularization techniques: L1, L2, dropout
 * [ ] Add optimizers: Adam, RMSProp
+* [ ] CNN
 * [ ] RBF NN
                          
 ##### To get started with Neural Networks I recommend the [playlist](https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) by 3Blue1Brown.
